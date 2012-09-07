@@ -89,10 +89,10 @@ inline void updateMotor(void){
      RollAccPID +=  E_roll*PID_CONSTANT;
      PitchAccPID +=  E_pitch*PID_CONSTANT;
 
-     LEFT_MOTOR = MIN_MOTOR+throttle+RollAccPID;   
-     RIGHT_MOTOR = MIN_MOTOR+throttle-RollAccPID;
-     FRONT_MOTOR = MIN_MOTOR+throttle+PitchAccPID ;
-     REAR_MOTOR = MIN_MOTOR+throttle-PitchAccPID;
+     LEFT_MOTOR = MIN_MOTOR+throttle+yaw+RollAccPID;   
+     RIGHT_MOTOR = MIN_MOTOR+throttle+yaw-RollAccPID;
+     FRONT_MOTOR = MIN_MOTOR+throttle-yaw+PitchAccPID ;
+     REAR_MOTOR = MIN_MOTOR+throttle-yaw-PitchAccPID;
   
 // 
 //      Serial.print(LEFT_MOTOR);
