@@ -113,7 +113,7 @@ double initKp=0.0, initKi=0.0, initKd=0.0;
 //double initKp=.5, initKi=0.025, initKd=0.125;
 
 //Specify the links and initial tuning parameters
-PID RollPID(&roll, &E_roll, &D_roll, consKp, consKi, consKd, DIRECT);
+PID RollPID(&roll, &E_roll, &D_roll, initKp, initKi, initKd, DIRECT);
 PID PitchPID(&pitch, &E_pitch, &D_pitch, initKp, initKi, initKd, DIRECT);
 
 

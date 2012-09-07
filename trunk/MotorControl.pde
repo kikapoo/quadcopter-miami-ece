@@ -72,12 +72,20 @@ void start_GDt_Clock(void){
 
 
 inline void updateMotor(void){
+ //Program ESC
+//     LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle;   
+//     RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle;
+//     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle;
+//     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle;
  
+ //Generic PID Test
 //     LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0+E_roll/4.0);   
 //     RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0-E_roll/4.0);
 //     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0+E_pitch/4.0);
 //     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0-E_pitch/4.0);
 
+
+//Actual PID
      RollAccPID +=  E_roll*PID_CONSTANT;
      PitchAccPID +=  E_pitch*PID_CONSTANT;
 
