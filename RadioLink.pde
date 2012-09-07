@@ -19,7 +19,6 @@ int flag, last;
 int dummy;
 void radio_check(void){
     if(Serial1.available()) {
-            flag = false;
             dummy = Serial1.read();
              switch (RX_state) {
                 case 0:
@@ -37,6 +36,7 @@ void radio_check(void){
                 case 2: //Button release recived
                     RX_data.B[RX_count++] =dummy;
                     if (RX_count > 16) {
+                        flag = false;  //Reset flag that shuts down motors
                         RX_count = 0;
                         RX_state = 0;
                         D_roll = RX_data.F[0];
