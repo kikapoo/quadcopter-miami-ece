@@ -108,7 +108,7 @@ long int Range=0;
 //Define the aggressive and conservative Tuning Parameters
 double aggKp=4, aggKi=0.2, aggKd=1;
 //double consKp=.5, consKi=0.025, consKd=0.125;
-double consKp=4, consKi=0.2, consKd=1;
+double consKp=.5, consKi=0.005, consKd=.125;
 double initKp=0.0, initKi=0.0, initKd=0.0;
 //double initKp=.5, initKi=0.025, initKd=0.125;
 
