@@ -35,7 +35,7 @@ with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
 // Positive pitch : nose up
 // Positive roll : right wing down
 // Positive yaw : clockwise
-int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+//int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 // Uncomment the below line to use this axis definition: 
    // X axis pointing forward
    // Y axis pointing to the left 
@@ -43,7 +43,7 @@ int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, 
 // Positive pitch : nose down
 // Positive roll : right wing down
 // Positive yaw : counterclockwise
-//int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 
 // tested with Arduino Uno with ATmega328 and Arduino Duemilanove with ATMega168
 
@@ -56,6 +56,32 @@ int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, 
 // 3.8 mg/digit; 1 g = 256
 #define GRAVITY 256  //this equivalent to 1G in the raw data coming from the accelerometer 
 
+#define ToRad(x) ((x)*0.01745329252)  // *pi/180
+#define ToDeg(x) ((x)*57.2957795131)  // *180/pi
+
+// L3G4200D gyro: 2000 dps full scale
+// 70 mdps/digit; 1 dps = 0.07
+#define Gyro_Gain_X 0.07 //X axis Gyro gain
+#define Gyro_Gain_Y 0.07 //Y axis Gyro gain
+#define Gyro_Gain_Z 0.07 //Z axis Gyro gain
+#define Gyro_Scaled_X(x) ((x)*ToRad(Gyro_Gain_X)) //Return the scaled ADC raw data of the gyro in radians for second
+#define Gyro_Scaled_Y(x) ((x)*ToRad(Gyro_Gain_Y)) //Return the scaled ADC raw data of the gyro in radians for second
+#define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z)) //Return the scaled ADC raw data of the gyro in radians for second
+
+
+#define Kp_ROLLPITCH 0.02
+#define Ki_ROLLPITCH 0.00002
+#define Kp_YAW 1.2
+#define Ki_YAW 0.00002
+
+
+
+int gyro_x;
+int gyro_y;
+int gyro_z;
+int accel_x;
+int accel_y;
+int accel_z;
 
 
 // LSM303 magnetometer calibration constants; use the Calibrate example from
@@ -167,7 +193,7 @@ void setup()
   counter=0;
   initPID();  //Initialize PID
   radio_init(); // Initialize radio (serial1)
-  range_init();  //Initialize Range finder (PWM 5)
+//  range_init();  //Initialize Range finder (PWM 5)
   ArmMotor();    //Initialize Motor signal (PWM 1-4)
   start_GDt_Clock();  //Initilize update clock (Timer 4 and 5 in 32 bit mode)
  
@@ -218,14 +244,16 @@ void loop() //Main Loop
       //Serial.println(Range);
     }
     
-//  if(counter == 0)
-//      Serial.println(G_Dt,9);
-    
+  if(counter == 0)
+      Serial.println(G_Dt,9);
+//    MadgwickAHRSupdate( Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z), accel_x, accel_y,  accel_z, c_magnetom_x,  c_magnetom_y, c_magnetom_z);
+      MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
+
     // DCM Calculations...
-    Matrix_update(); 
-    Normalize();
-    Drift_correction();
-    Euler_angles();
+//    Matrix_update(); 
+//    Normalize();
+//    Drift_correction();
+//    Euler_angles();
    
 
   }

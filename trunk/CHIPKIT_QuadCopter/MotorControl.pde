@@ -56,7 +56,7 @@ void ArmMotor(void){
     OC4CONSET = 0x8020;// Enable OC4 in 32-bit mode. 
 }
 
-//Timer5 and 5 are used to time the overal loop
+//Timer4 and 5 are used to time the overal loop
 void start_GDt_Clock(void){
   TMR4 = 0;
   TMR5 = 0;
@@ -64,7 +64,7 @@ void start_GDt_Clock(void){
   PR4 = FIVE_MS; // period of 5ms = 200Hz
 //  PR4 = ONE_MS; // period of 1ms = 1000Hz
 
-  T4CONSET = 0x8000;// Enable Timer2
+  T4CONSET = 0x8000;// Enable Timer4
   
   IFS0CLR = 0x00100000;// Clear the T5 interrupt flag
 
