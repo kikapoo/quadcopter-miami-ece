@@ -27,33 +27,33 @@ You should have received a copy of the GNU Lesser General Public License along
 with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
 
 */
-
-#define ToRad(x) ((x)*0.01745329252)  // *pi/180
-#define ToDeg(x) ((x)*57.2957795131)  // *180/pi
-
-// L3G4200D gyro: 2000 dps full scale
-// 70 mdps/digit; 1 dps = 0.07
-#define Gyro_Gain_X 0.07 //X axis Gyro gain
-#define Gyro_Gain_Y 0.07 //Y axis Gyro gain
-#define Gyro_Gain_Z 0.07 //Z axis Gyro gain
-#define Gyro_Scaled_X(x) ((x)*ToRad(Gyro_Gain_X)) //Return the scaled ADC raw data of the gyro in radians for second
-#define Gyro_Scaled_Y(x) ((x)*ToRad(Gyro_Gain_Y)) //Return the scaled ADC raw data of the gyro in radians for second
-#define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z)) //Return the scaled ADC raw data of the gyro in radians for second
-
-
-#define Kp_ROLLPITCH 0.02
-#define Ki_ROLLPITCH 0.00002
-#define Kp_YAW 1.2
-#define Ki_YAW 0.00002
-
-
-
-int gyro_x;
-int gyro_y;
-int gyro_z;
-int accel_x;
-int accel_y;
-int accel_z;
+//
+//#define ToRad(x) ((x)*0.01745329252)  // *pi/180
+//#define ToDeg(x) ((x)*57.2957795131)  // *180/pi
+//
+//// L3G4200D gyro: 2000 dps full scale
+//// 70 mdps/digit; 1 dps = 0.07
+//#define Gyro_Gain_X 0.07 //X axis Gyro gain
+//#define Gyro_Gain_Y 0.07 //Y axis Gyro gain
+//#define Gyro_Gain_Z 0.07 //Z axis Gyro gain
+//#define Gyro_Scaled_X(x) ((x)*ToRad(Gyro_Gain_X)) //Return the scaled ADC raw data of the gyro in radians for second
+//#define Gyro_Scaled_Y(x) ((x)*ToRad(Gyro_Gain_Y)) //Return the scaled ADC raw data of the gyro in radians for second
+//#define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z)) //Return the scaled ADC raw data of the gyro in radians for second
+//
+//
+//#define Kp_ROLLPITCH 0.02
+//#define Ki_ROLLPITCH 0.00002
+//#define Kp_YAW 1.2
+//#define Ki_YAW 0.00002
+//
+//
+//
+//int gyro_x;
+//int gyro_y;
+//int gyro_z;
+//int accel_x;
+//int accel_y;
+//int accel_z;
 
 
 float Accel_Vector[3]= {0,0,0}; //Store the acceleration in a vector
