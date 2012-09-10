@@ -95,12 +95,12 @@ void Compass_Init()
   // 15 Hz default
 }
 
-void Read_Compass()
-{
-  compass.readMag();
-  
-  magnetom_x = SENSOR_SIGN[6] * compass.m.x;
-  magnetom_y = SENSOR_SIGN[7] * compass.m.y;
-  magnetom_z = SENSOR_SIGN[8] * compass.m.z;
-}
+//void Read_Compass()
+//{
+//  compass.readMag();
+//  
+//  magnetom_x = SENSOR_SIGN[6] * compass.m.x;
+//  magnetom_y = SENSOR_SIGN[7] * compass.m.y;
+//  magnetom_z = SENSOR_SIGN[8] * compass.m.z;
+//}
 

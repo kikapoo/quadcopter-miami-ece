@@ -79,20 +79,20 @@ inline void updateMotor(void){
 //     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle;
  
  //Generic PID Test
-//     LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0+E_roll/4.0);   
-//     RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0-E_roll/4.0);
-//     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0+E_pitch/4.0);
-//     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0-E_pitch/4.0);
+     LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0+E_roll/4.0);   
+     RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0-E_roll/4.0);
+     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0+E_pitch/4.0);
+     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0-E_pitch/4.0);
 
 
 //Actual PID
-     RollAccPID +=  E_roll*PID_CONSTANT;
-     PitchAccPID +=  E_pitch*PID_CONSTANT;
-
-     LEFT_MOTOR = MIN_MOTOR+throttle+yaw+RollAccPID;   
-     RIGHT_MOTOR = MIN_MOTOR+throttle+yaw-RollAccPID;
-     FRONT_MOTOR = MIN_MOTOR+throttle-yaw+PitchAccPID ;
-     REAR_MOTOR = MIN_MOTOR+throttle-yaw-PitchAccPID;
+//     RollAccPID +=  E_roll*PID_CONSTANT;
+//     PitchAccPID +=  E_pitch*PID_CONSTANT;
+//
+//     LEFT_MOTOR = MIN_MOTOR+throttle+yaw+RollAccPID;   
+//     RIGHT_MOTOR = MIN_MOTOR+throttle+yaw-RollAccPID;
+//     FRONT_MOTOR = MIN_MOTOR+throttle-yaw+PitchAccPID ;
+//     REAR_MOTOR = MIN_MOTOR+throttle-yaw-PitchAccPID;
   
 // 
 //      Serial.print(LEFT_MOTOR);

@@ -159,7 +159,7 @@ void setup()
   
   Gyro_Init();
   Accel_Init();
-  Compass_Init();
+//  Compass_Init();
   
   delay(20);
   Serial.println("Offset:");
@@ -223,8 +223,8 @@ void loop() //Main Loop
     if (counter > (LOOP_FREQ/50))  // Read compass data at 50Hz... (5 loop runs)
       {
       counter=0;
-      Read_Compass();    // Read I2C magnetometer
-      Compass_Heading(); // Calculate magnetic heading  
+ //     Read_Compass();    // Read I2C magnetometer
+ //     Compass_Heading(); // Calculate magnetic heading  
       
       updatePID();
       updateMotor();   
