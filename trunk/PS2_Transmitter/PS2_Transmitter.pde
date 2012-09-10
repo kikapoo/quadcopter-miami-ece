@@ -5,14 +5,14 @@ PS2X ps2x; // create PS2 Controller Class
 //right now, the library does NOT support hot pluggable controllers, meaning 
 //you must always either restart your Arduino after you conect the controller, 
 //or call config_gamepad(pins) again after connecting the controller.
-int error = 0; 
+long int error = 0; 
 byte type = 0;
 byte vibrate = 0;
 int printCount = 0;
 ///////////////////////////
 typedef union  {
    char B[4];
-   int  I;
+   long int  I;
    float F; }
 TX_data;
 
@@ -26,9 +26,9 @@ TX_data throttle;
 //byte *throttlePtr;
 
 TX_data yaw;
-int yawFix, throttleFix;
-int yawAnalog, throttleAnalog;
-int rateINT;
+long int yawFix, throttleFix;
+long int yawAnalog, throttleAnalog;
+long int rateINT;
 float rateFLOAT;
 float RPscale, YTscale;
 byte syncBytes[4];
@@ -110,24 +110,20 @@ void loop(){
  
  else { //DualShock Controller
    //Check aggressive/less aggressive on Roll Pitch
-   if(ps2x.Button(PSB_R2 )){
-     if(ps2x.Button(PSB_R1))
-       RPscale = 1;
-     else
-       RPscale = .25;
+     if(ps2x.Button(PSB_R1)) {
+         RPscale = .25;
+     }else if(ps2x.Button(PSB_R2)) {
+       RPscale = 4;
     }else{ 
-      if(ps2x.Button(PSB_R1))
-       RPscale = 4.0;
+       RPscale = 1;
    }
    //Check aggressive/less aggressive on Yaw Throttle
-   if(ps2x.Button(PSB_L2 )){
-     if(ps2x.Button(PSB_L1 ))
-       YTscale = 1;
-     else
+     if(ps2x.Button(PSB_L1 )){
        YTscale = .25;
+   }else if(ps2x.Button(PSB_L2)) {
+       YTscale = 4;
    }else{
-     if(ps2x.Button(PSB_L1 ))
-       YTscale = 4.0;
+       YTscale = 1;
    }
    //Calculate analog adjustments to Throttle/Yaw/Roll/Pitch 
    throttleAnalog = (128-ps2x.Analog(PSS_LY))*4000/128*YTscale;
