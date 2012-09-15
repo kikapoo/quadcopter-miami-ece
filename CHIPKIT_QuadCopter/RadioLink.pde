@@ -61,6 +61,7 @@ void radio_check(void){
             D_pitch = 0.0;
             throttle -= 200;
             last = millis();
+            Serial.print("No Signal");
           }
           
           
