@@ -79,10 +79,12 @@ inline void updateMotor(void){
 //     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle;
  
  //Generic PID Test
-     LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0+E_roll/4.0);   
-     RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle*(1.0-E_roll/4.0);
-     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0+E_pitch/4.0);
-     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle*(1.0-E_pitch/4.0);
+     LEFT_MOTOR = (MIN_MOTOR);  
+     RIGHT_MOTOR = (MIN_MOTOR);
+    // LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle+(1000.0* E_roll);   
+    // RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle-(1000.0*E_roll);
+     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle+(4000.0*E_pitch);
+     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle-(4000.0*E_pitch);
 
 
 //Actual PID

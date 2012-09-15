@@ -50,7 +50,7 @@ int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro
 #include <Wire.h>
 #include <PID_v1.h>
 
-#define LOOP_FREQ 200  //choose 50,100, or 200
+#define LOOP_FREQ 100  //choose 50,100, or 200
 #define LOOP_TIME 1000/LOOP_FREQ  //in ms
 // LSM303 accelerometer: 8 g sensitivity
 // 3.8 mg/digit; 1 g = 256
@@ -109,18 +109,18 @@ int AN_OFFSET[6]={0,0,0,0,0,0}; //Array that stores the Offset of the sensors
 int throttle = 0;
 
 // Euler angles
-double roll;
-double pitch;
-//double yaw;
+float roll;
+float pitch;
+//float yaw;
 int yaw=0;
 
-double D_roll = 0;
-double D_pitch = 0;
-double D_yaw = 0;
+float D_roll = 0;
+float D_pitch = 0;
+float D_yaw = 0;
 
-double E_roll;
-double E_pitch;
-double E_yaw;
+float E_roll;
+float E_pitch;
+float E_yaw;
 
 
 
@@ -132,11 +132,15 @@ long int Range=0;
 
 
 //Define the aggressive and conservative Tuning Parameters
-double aggKp=4, aggKi=0.2, aggKd=1;
-//double consKp=.5, consKi=0.025, consKd=0.125;
-double consKp=.5, consKi=0.005, consKd=.125;
-double initKp=0.0, initKi=0.0, initKd=0.0;
-//double initKp=.5, initKi=0.025, initKd=0.125;
+float aggKp=4, aggKi=0.2, aggKd=1;
+//float consKp=.5, consKi=0.025, consKd=0.125;
+
+  float consKp=1.0, consKi=0.000, consKd=0.00;
+  float initKp=0.0, initKi=0.0, initKd=0.0;
+
+//float initKp=.5, initKi=0.025, initKd=0.125;
+
+
 
 //Specify the links and initial tuning parameters
 PID RollPID(&roll, &E_roll, &D_roll, initKp, initKi, initKd, DIRECT);
@@ -244,8 +248,21 @@ void loop() //Main Loop
       //Serial.println(Range);
     }
     
-  if(counter == 0)
-      Serial.println(G_Dt,9);
+  if(counter == 0){
+     // Serial.println(G_Dt,9);
+      Serial.print(roll);
+      Serial.print(", ");
+      Serial.print(D_roll);
+       Serial.print("      ");
+      Serial.print(pitch);
+      Serial.print(", ");
+      Serial.print(D_pitch);
+      Serial.print("      ");
+      Serial.print(throttle);
+      Serial.print("      ");
+      Serial.println(E_pitch);
+    
+  }
 //    MadgwickAHRSupdate( Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z), accel_x, accel_y,  accel_z, c_magnetom_x,  c_magnetom_y, c_magnetom_z);
       MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
 
