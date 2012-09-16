@@ -135,8 +135,8 @@ long int Range=0;
 float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
-  float consKp=1.0, consKi=0.000, consKd=0.00;
-  float initKp=0.0, initKi=0.0, initKd=0.0;
+  float consKp=1.0, consKi=0.00, consKd=0.00;
+  float initKp=1.0, initKi=0.00, initKd=0.00;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 

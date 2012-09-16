@@ -48,8 +48,8 @@ void radio_check(void){
                    break; 
                 case 3:
                   if(dummy == 0x5B){
-                      RollPID.SetTunings(consKp, consKi, consKd);
-                      PitchPID.SetTunings(consKp, consKi, consKd);
+                      RollPID.SetMode(AUTOMATIC);
+                      PitchPID.SetMode(AUTOMATIC);
                   }
                   RX_state = 0;
                   break;
