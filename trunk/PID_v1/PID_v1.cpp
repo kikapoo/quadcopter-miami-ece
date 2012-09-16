@@ -45,30 +45,24 @@ PID::PID(float* Input, float* Output, float* Setpoint,
 void PID::Compute()
 {
    if(!inAuto) return;
-   unsigned long now = millis();
-   unsigned long timeChange = (now - lastTime);
-   if(timeChange>=SampleTime)
-   {
       /*Compute all the working error variables*/
-	  float input = *myInput;
-      float error = *mySetpoint - input;
-      ITerm+= (ki * error);
-      if(ITerm > outMax) ITerm= outMax;
-      else if(ITerm < outMin) ITerm= outMin;
-      float dInput = (input - lastInput);
+	float input = *myInput;
+    float error = *mySetpoint - input;
+    ITerm+= (ki * error);
+    if(ITerm > outMax) ITerm= outMax;
+    else if(ITerm < outMin) ITerm= outMin;
+    float dInput = (input - lastInput);
  
-      /*Compute PID Output*/
-      float output = kp * error + ITerm- kd * dInput;
-      
-	  if(output > outMax) output = outMax;
-      else if(output < outMin) output = outMin;
-	  *myOutput = output;
+    /*Compute PID Output*/
+    float output = kp * error + ITerm- kd * dInput;
+     
+	if(output > outMax) output = outMax;
+    else if(output < outMin) output = outMin;
+	*myOutput = output;
 	  
-      /*Remember some variables for next time*/
-      lastInput = input;
-      lastTime = now;
-   }
-}
+    /*Remember some variables for next time*/
+    lastInput = input;
+ }
 
 
 /* SetTunings(...)*************************************************************
