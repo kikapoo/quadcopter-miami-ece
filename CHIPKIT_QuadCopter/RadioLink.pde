@@ -44,7 +44,7 @@ void radio_check(void){
                         throttle = RX_data.I[2];
                         yaw = RX_data.I[3];
                        // Serial.print("packet Received");
-                    } 
+                                    } 
                    break; 
                 case 3:
                   if(dummy == 0x5B){
