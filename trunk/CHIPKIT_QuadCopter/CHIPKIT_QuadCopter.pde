@@ -135,8 +135,8 @@ long int Range=0;
 float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
-  float consKp=1.0, consKi=0.00, consKd=0.00;
-  float initKp=1.0, initKi=0.00, initKd=0.00;
+  float consKp=1.5, consKi=0.070, consKd=0.3500;
+  float initKp=1.5, initKi=0.00, initKd=0.00;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 
@@ -250,16 +250,16 @@ void loop() //Main Loop
     
   if(counter == 0){
      // Serial.println(G_Dt,9);
-      Serial.print(roll);
-      Serial.print(", ");
-      Serial.print(D_roll);
-       Serial.print("      ");
+//      Serial.print(roll);
+//      Serial.print(", ");
+//      Serial.print(D_roll);
+//       Serial.print("      ");
       Serial.print(pitch);
       Serial.print(", ");
       Serial.print(D_pitch);
-      Serial.print("      ");
+      Serial.print("    ");
       Serial.print(throttle);
-      Serial.print("      ");
+      Serial.print("    ");
       Serial.println(E_pitch);
     
   }
