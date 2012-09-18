@@ -42,12 +42,14 @@ void I2C_Init()
 void Gyro_Init()
 {
   gyro.writeReg(L3G4200D_CTRL_REG4, 0x20); // 2000 dps full scale
-// gyro.writeReg(L3G4200D_CTRL_REG2, 0x00); // H.P. Freq selection @100=8Hz  @200=15Hz @400=30Hz @800=56Hz
- //gyro.writeReg(L3G4200D_CTRL_REG5, 0x01); // Allow High Pass Filtering
+// gyro.writeReg(L3G4200D_CTRL_REG2, 0x09); // H.P. Freq selection @100=0.01Hz  @200=0.02Hz @400=0.05Hz @800=.1Hz
+// gyro.writeReg(L3G4200D_CTRL_REG5, 0x13); // Allow LOW Pass Filtering 2 and High Pass Filter to remove drift 
+
+ gyro.writeReg(L3G4200D_CTRL_REG5, 0x02); // Allow LOW Pass Filtering 2 
 
   //gyro.writeReg(L3G4200D_CTRL_REG1, 0x0F); // normal power mode, all axes enabled, 100 Hz
-  //gyro.writeReg(L3G4200D_CTRL_REG1, 0xAF); // normal power mode, all axes enabled, ? Hz
-  gyro.writeReg(L3G4200D_CTRL_REG1, 0xBF); // normal power mode, all axes enabled, 400 Hz
+  gyro.writeReg(L3G4200D_CTRL_REG1, 0x9F); // normal power mode, all axes enabled, 400 Hz 20 BW
+  //gyro.writeReg(L3G4200D_CTRL_REG1, 0x4F); // normal power mode, all axes enabled, 200 Hz
 
 
 }
@@ -70,8 +72,8 @@ void Accel_Init()
 //  compass.writeAccReg(LSM303_CTRL_REG2_A, 0x10); // Enable H.P. filter @50=1Hz @100=2Hz @400=8Hz @1000=20Hz
 
  // compass.writeAccReg(LSM303_CTRL_REG1_A, 0x57); // normal power mode, all axes enabled, 100 Hz
-  compass.writeAccReg(LSM303_CTRL_REG1_A, 0x37); // normal power mode, all axes enabled, 400 Hz
-//  compass.writeAccReg(LSM303_CTRL_REG1_A, 0x67); // normal power mode, all axes enabled, 200 Hz
+  //compass.writeAccReg(LSM303_CTRL_REG1_A, 0x37); // normal power mode, all axes enabled, 400 Hz
+  compass.writeAccReg(LSM303_CTRL_REG1_A, 0x37); // normal power mode, all axes enabled, 200 Hz
 
 }
 
