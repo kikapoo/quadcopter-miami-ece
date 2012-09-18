@@ -34,6 +34,14 @@ with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
 L3G4200D gyro;
 LSM303 compass;
 
+#define FILTER_SIZE 20
+int filter_X[FILTER_SIZE];
+int filter_Y[FILTER_SIZE];
+int filter_Z[FILTER_SIZE];
+
+int sum_X,sum_Y,sum_Z;
+int FC = 0;
+
 void I2C_Init()
 {
   Wire.begin();
@@ -57,13 +65,25 @@ void Gyro_Init()
 void Read_Gyro()
 {
   gyro.read();
+   
+  sum_X = (sum_X - filter_X[FC]) + gyro.g.x;
+  filter_X[FC] = gyro.g.x;
   
-  AN[0] = gyro.g.x;
-  AN[1] = gyro.g.y;
-  AN[2] = gyro.g.z;
+  sum_Y = (sum_Y - filter_Y[FC]) + gyro.g.y;
+  filter_Y[FC] = gyro.g.y;
+  
+  sum_Z = (sum_Z - filter_Z[FC]) + gyro.g.z;
+  filter_Z[FC] = gyro.g.z;
+  
+  AN[0] = sum_X/FILTER_SIZE;
+  AN[1] = sum_Y/FILTER_SIZE;
+  AN[2] = sum_Z/FILTER_SIZE;
   gyro_x = SENSOR_SIGN[0] * (AN[0] - AN_OFFSET[0]);
   gyro_y = SENSOR_SIGN[1] * (AN[1] - AN_OFFSET[1]);
   gyro_z = SENSOR_SIGN[2] * (AN[2] - AN_OFFSET[2]);
+  
+  FC = (FC + 1)%FILTER_SIZE;  
+  
 }
 
 void Accel_Init()
