@@ -28,6 +28,12 @@ with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
 
 */
 #include <plib.h>
+#include <L3G4200D.h>
+#include <LSM303.h>
+
+L3G4200D gyro;
+LSM303 compass;
+
 // Uncomment the below line to use this axis definition: 
    // X axis pointing forward
    // Y axis pointing to the right 
@@ -49,6 +55,8 @@ int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro
 
 #include <Wire.h>
 #include <PID_v1.h>
+
+#define FILTER_ROLL_PITCH 1
 
 #define LOOP_FREQ 100  //choose 50,100, or 200
 #define LOOP_TIME 1000/LOOP_FREQ  //in ms
@@ -136,10 +144,17 @@ float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
   float consKp=1.5, consKi=0.070, consKd=0.3500;
-  float initKp=1.5, initKi=0.00, initKd=0.00;
+  float initKp=1.5, initKi=0.070, initKd=0.5500;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 
+#if FILTER_ROLL_PITCH
+#define FILTER_SIZE_2 5
+float filter_Roll[FILTER_SIZE_2];
+float filter_Pitch[FILTER_SIZE_2];
+float sum_Roll,sum_Pitch;
+int FC1 = 0;
+#endif
 
 
 //Specify the links and initial tuning parameters
@@ -223,6 +238,21 @@ void loop() //Main Loop
     // Data adquisition
     Read_Gyro();   // This read gyro data
     Read_Accel();     // Read I2C accelerometer
+   
+    MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
+
+    #if FILTER_ROLL_PITCH
+
+    sum_Pitch = (sum_Pitch - filter_Pitch[FC1]) + pitch;
+    filter_Pitch[FC1] = pitch;
+    pitch = sum_Pitch/FILTER_SIZE_2;
+ 
+    sum_Roll = (sum_Roll - filter_Roll[FC1]) + roll;
+    filter_Roll[FC1] = roll;
+    roll = sum_Roll/FILTER_SIZE_2;
+
+    FC1 = (FC1 + 1)%FILTER_SIZE_2;
+    #endif
     
     if (counter > (LOOP_FREQ/50))  // Read compass data at 50Hz... (5 loop runs)
       {
@@ -257,14 +287,28 @@ void loop() //Main Loop
       Serial.print(pitch);
       Serial.print(", ");
       Serial.print(D_pitch);
-      Serial.print("    ");
-      Serial.print(throttle);
-      Serial.print("    ");
-      Serial.println(E_pitch);
-    
+      Serial.print(", ");
+      Serial.println(throttle);
+     // Serial.print(", ");
+     // Serial.println(E_pitch);
+// Serial.print(" M ");  
+//  Serial.print("X: ");
+//  Serial.print(AN[3]);
+//  Serial.print(" Y: ");
+//  Serial.print(AN[4]);
+//  Serial.print(" Z: ");
+//  Serial.print(AN[5]);
+//  
+//  Serial.print(" G ");
+//  Serial.print("X: ");
+//  Serial.print(AN[0]);
+//  Serial.print(" Y: ");
+//  Serial.print(AN[1]);
+//  Serial.print(" Z: ");
+//  Serial.println(AN[2]);
+//    
   }
 //    MadgwickAHRSupdate( Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z), accel_x, accel_y,  accel_z, c_magnetom_x,  c_magnetom_y, c_magnetom_z);
-      MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
 
     // DCM Calculations...
 //    Matrix_update(); 
