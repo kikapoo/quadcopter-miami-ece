@@ -57,6 +57,8 @@ class L3G4200D
 		byte readReg(byte reg);
 		
 		void read(void);
+		byte readFIFOdepth(void);
+		void readFIFO(byte* buf, byte depth);
 		
 		// vector functions
 		static void vector_cross(const vector *a, const vector *b, vector *out);
