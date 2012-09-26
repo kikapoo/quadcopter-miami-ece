@@ -26,7 +26,33 @@ void L3G4200D::writeReg(byte reg, byte value)
 	Wire.send(value);
 	Wire.endTransmission();
 }
+//check the depth of the FIFO to be followed by a FIFO read
+byte L3G4200D::readFIFOdepth(void){
+	byte value;
+	Wire.beginTransmission(GYR_ADDRESS);
+	Wire.send(L3G4200D_FIFO_SRC_REG);
+	Wire.endTransmission();
+	Wire.requestFrom(GYR_ADDRESS, 1);
+	value = (Wire.receive()&0x1f);
+	Wire.endTransmission();
 
+	return value;
+
+
+}
+
+//Read the data register (assuming in FIFO mode) depth number of times
+void L3G4200D::readFIFO(byte* buf, byte depth){
+	Wire.beginTransmission(GYR_ADDRESS);
+	Wire.send(L3G4200D_OUT_X_L| (1 << 7));
+	Wire.endTransmission();
+	Wire.requestFrom(GYR_ADDRESS, depth*6);
+	while (Wire.available() < (depth*6));
+	for(int i = 0; i<depth*6;i++)
+		buf[i]=Wire.receive();
+	Wire.endTransmission();
+
+}
 // Reads a gyro register
 byte L3G4200D::readReg(byte reg)
 {
