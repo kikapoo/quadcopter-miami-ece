@@ -43,7 +43,7 @@ void radio_check(void){
                         D_roll = RX_data.F[0];
                         if(abs(RX_data.F[1])<1.5)
                           D_pitch = RX_data.F[1];
-                        if(RX_data.I[2]<100000)
+                        if(abs(RX_data.I[2])<100000)
                           throttle = RX_data.I[2];
                         if(abs(RX_data.I[3])<4000);
                           yaw = RX_data.I[3];
