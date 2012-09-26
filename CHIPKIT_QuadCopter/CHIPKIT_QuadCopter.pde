@@ -56,9 +56,9 @@ int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro
 #include <Wire.h>
 #include <PID_v1.h>
 
-#define FILTER_ROLL_PITCH 1
+#define FILTER_ROLL_PITCH 0
 
-#define LOOP_FREQ 100  //choose 50,100, or 200
+#define LOOP_FREQ 50  //choose 50,100, or 200
 #define LOOP_TIME 1000/LOOP_FREQ  //in ms
 // LSM303 accelerometer: 8 g sensitivity
 // 3.8 mg/digit; 1 g = 256
@@ -115,6 +115,7 @@ int AN[6]; //array that stores the gyro and accelerometer data
 int AN_OFFSET[6]={0,0,0,0,0,0}; //Array that stores the Offset of the sensors
 
 int throttle = 0;
+volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
 // Euler angles
 float roll;
@@ -143,8 +144,8 @@ long int Range=0;
 float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
-  float consKp=1.5, consKi=0.070, consKd=0.3500;
-  float initKp=1.5, initKi=0.070, initKd=0.5500;
+  float consKp=1.5, consKi=0.00, consKd=0.3500;
+  float initKp=1.5, initKi=0.1500, initKd=0.3500;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 
@@ -185,21 +186,17 @@ void setup()
   for(int i=0;i<64;i++)    // We take some readings...
     {
     Read_Accel();
-     
-    Read_Gyro();
-    
-    
-    for(int y=0; y<6; y++)   // Cumulate values
+    for(int y=3; y<6; y++)   // Cumulate values
       AN_OFFSET[y] += AN[y];
     delay(20);
     
     }
     
-  for(int y=0; y<6; y++)
+  for(int y=3; y<6; y++)
     AN_OFFSET[y] = AN_OFFSET[y]/64;
     
   AN_OFFSET[5]-=GRAVITY*SENSOR_SIGN[5];
-  
+  collect_offsets();
   
 //  for(int y=0; y<6; y++)
 //    Serial.println(AN_OFFSET[y]);
@@ -216,47 +213,50 @@ void setup()
   ArmMotor();    //Initialize Motor signal (PWM 1-4)
   start_GDt_Clock();  //Initilize update clock (Timer 4 and 5 in 32 bit mode)
  
-  timer=micros();
-
+ // timer=micros();
+G_Dt = 1.0/800.0;
 }
 
 void loop() //Main Loop
 {
+ 
+  
   radio_check();
   if(IFS0&0x00100000)  // Main loop runs at LOOP_FREQ **see top of code to set (use 50/100/200 for good results)
   {
     IFS0CLR = 0x00100000;
-    counter++;
+   // counter++;
     rangeCounter++;
-    timer_old = timer;
-    timer=micros();
+   // timer_old = timer;
+   // timer=micros();
 
-    G_Dt = (timer-timer_old)/1000000.0;    // Real time of loop run. We use this on the DCM algorithm (gyro integration time)
+   // G_Dt = (timer-timer_old)/1000000.0;    // Real time of loop run. We use this on the DCM algorithm (gyro integration time)
  //   G_Dt = LOOP_TIME/1000.0;    // Use when loop time is very consistant to avoid math or extra overhead.
    
     // *** DCM algorithm
     // Data adquisition
-    Read_Gyro();   // This read gyro data
-    Read_Accel();     // Read I2C accelerometer
-   
-    MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
-
-    #if FILTER_ROLL_PITCH
-
-    sum_Pitch = (sum_Pitch - filter_Pitch[FC1]) + pitch;
-    filter_Pitch[FC1] = pitch;
-    pitch = sum_Pitch/FILTER_SIZE_2;
- 
-    sum_Roll = (sum_Roll - filter_Roll[FC1]) + roll;
-    filter_Roll[FC1] = roll;
-    roll = sum_Roll/FILTER_SIZE_2;
-
-    FC1 = (FC1 + 1)%FILTER_SIZE_2;
-    #endif
     
-    if (counter > (LOOP_FREQ/50))  // Read compass data at 50Hz... (5 loop runs)
-      {
-      counter=0;
+    //G_Dt = Read_Gyro()*.005;   // This read gyro data
+    Read_Accel();     // Read I2C accelerometer
+    Update_Matrix();
+    //MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
+
+//    #if FILTER_ROLL_PITCH
+//
+//    sum_Pitch = (sum_Pitch - filter_Pitch[FC1]) + pitch;
+//    filter_Pitch[FC1] = pitch;
+//    pitch = sum_Pitch/FILTER_SIZE_2;
+// 
+//    sum_Roll = (sum_Roll - filter_Roll[FC1]) + roll;
+//    filter_Roll[FC1] = roll;
+//    roll = sum_Roll/FILTER_SIZE_2;
+//
+//    FC1 = (FC1 + 1)%FILTER_SIZE_2;
+//    #endif
+//    
+   // if (counter > (LOOP_FREQ/50))  // Read compass data at 50Hz... (5 loop runs)
+     // {
+   //   counter=0;
  //     Read_Compass();    // Read I2C magnetometer
  //     Compass_Heading(); // Calculate magnetic heading  
       
@@ -264,7 +264,7 @@ void loop() //Main Loop
       updateMotor();   
 
 
-    }
+   // }
     if (rangeCounter > (LOOP_FREQ/10))  // Read Range data at 10Hz... (10 loop runs)
       {
         rangeCounter = 0;
@@ -288,9 +288,9 @@ void loop() //Main Loop
       Serial.print(", ");
       Serial.print(D_pitch);
       Serial.print(", ");
-      Serial.println(throttle);
-     // Serial.print(", ");
-     // Serial.println(E_pitch);
+      Serial.print(throttle);
+      Serial.print(", ");
+      Serial.println(E_pitch);
 // Serial.print(" M ");  
 //  Serial.print("X: ");
 //  Serial.print(AN[3]);
@@ -308,14 +308,7 @@ void loop() //Main Loop
 //  Serial.println(AN[2]);
 //    
   }
-//    MadgwickAHRSupdate( Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z), accel_x, accel_y,  accel_z, c_magnetom_x,  c_magnetom_y, c_magnetom_z);
 
-    // DCM Calculations...
-//    Matrix_update(); 
-//    Normalize();
-//    Drift_correction();
-//    Euler_angles();
-   
 
   }
    

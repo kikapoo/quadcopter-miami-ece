@@ -61,7 +61,8 @@ void start_GDt_Clock(void){
   TMR4 = 0;
   TMR5 = 0;
   T4CONSET = 0x0008;// Enable 32-bit Timer mode
-  PR4 = FIVE_MS; // period of 5ms = 200Hz
+  PR4 = TWENTY_MS; // period of 20ms = 50Hz
+  //PR4 = FIVE_MS; // period of 5ms = 200Hz
 //  PR4 = ONE_MS; // period of 1ms = 1000Hz
 
   T4CONSET = 0x8000;// Enable Timer4
