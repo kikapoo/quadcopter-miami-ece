@@ -15,11 +15,6 @@
 #define FRONT_MOTOR OC3RS
 #define REAR_MOTOR OC4RS
 
-#define PID_CONSTANT  2000
-int RollAccPID=0, PitchAccPID=0;
-
-
-
 void ArmMotor(void){
 
     OC1CON = 0x0000;// Turn off the OC1 when performing the setup
@@ -42,9 +37,6 @@ void ArmMotor(void){
     OC4RS = MIN_MOTOR;// Initialize secondary Compare register
     OC4CON = 0x0006;// Configure for PWM mode without Fault pin enabled
     
-    
-    
-    
     T2CONSET = 0x0008;// Enable 32-bit Timer mode
     
     PR2 = TWENTY_MS; // period of 20ms = 50Hz
@@ -63,7 +55,7 @@ void start_GDt_Clock(void){
   T4CONSET = 0x0008;// Enable 32-bit Timer mode
   PR4 = TWENTY_MS; // period of 20ms = 50Hz
   //PR4 = FIVE_MS; // period of 5ms = 200Hz
-//  PR4 = ONE_MS; // period of 1ms = 1000Hz
+  //PR4 = ONE_MS; // period of 1ms = 1000Hz
 
   T4CONSET = 0x8000;// Enable Timer4
   
@@ -73,38 +65,14 @@ void start_GDt_Clock(void){
 
 
 inline void updateMotor(void){
- //Program ESC
-//     LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle;   
-//     RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle;
-//     FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle;
-//     REAR_MOTOR = (MIN_MOTOR-yaw)+throttle;
- 
- //Generic PID Test
+
+//Program ESC
+//Generic PID Test
      LEFT_MOTOR = (MIN_MOTOR)+throttle;  
      RIGHT_MOTOR = (MIN_MOTOR)+throttle;
     // LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle+(1000.0* E_roll);   
     // RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle-(1000.0*E_roll);
      FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle+(4000.0*E_pitch);
      REAR_MOTOR = (MIN_MOTOR-yaw)+throttle-(4000.0*E_pitch);
-
-
-//Actual PID
-//     RollAccPID +=  E_roll*PID_CONSTANT;
-//     PitchAccPID +=  E_pitch*PID_CONSTANT;
-//
-//     LEFT_MOTOR = MIN_MOTOR+throttle+yaw+RollAccPID;   
-//     RIGHT_MOTOR = MIN_MOTOR+throttle+yaw-RollAccPID;
-//     FRONT_MOTOR = MIN_MOTOR+throttle-yaw+PitchAccPID ;
-//     REAR_MOTOR = MIN_MOTOR+throttle-yaw-PitchAccPID;
-  
-// 
-//      Serial.print(LEFT_MOTOR);
-//      Serial.print(", ");
-//      Serial.println(RIGHT_MOTOR);
-//
-//      Serial.println(roll);
-//      Serial.print(", ");
-//      Serial.println(pitch,4);
-//  
 
 }
