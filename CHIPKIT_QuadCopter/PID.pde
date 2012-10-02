@@ -16,8 +16,4 @@ inline void updatePID(void){
        
      RollPID.Compute();
      PitchPID.Compute(); 
-     
-
-  
-  
-}
+ }

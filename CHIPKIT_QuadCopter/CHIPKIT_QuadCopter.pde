@@ -1,32 +1,32 @@
 /*
 
-MinIMU-9-Arduino-AHRS
-Pololu MinIMU-9 + Arduino AHRS (Attitude and Heading Reference System)
-
-Copyright (c) 2011 Pololu Corporation.
-http://www.pololu.com/
-
-MinIMU-9-Arduino-AHRS is based on sf9domahrs by Doug Weibel and Jose Julio:
-http://code.google.com/p/sf9domahrs/
-
-sf9domahrs is based on ArduIMU v1.5 by Jordi Munoz and William Premerlani, Jose
-Julio and Doug Weibel:
-http://code.google.com/p/ardu-imu/
-
-MinIMU-9-Arduino-AHRS is free software: you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation, either version 3 of the License, or (at your option)
-any later version.
-
-MinIMU-9-Arduino-AHRS is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ MinIMU-9-Arduino-AHRS
+ Pololu MinIMU-9 + Arduino AHRS (Attitude and Heading Reference System)
+ 
+ Copyright (c) 2011 Pololu Corporation.
+ http://www.pololu.com/
+ 
+ MinIMU-9-Arduino-AHRS is based on sf9domahrs by Doug Weibel and Jose Julio:
+ http://code.google.com/p/sf9domahrs/
+ 
+ sf9domahrs is based on ArduIMU v1.5 by Jordi Munoz and William Premerlani, Jose
+ Julio and Doug Weibel:
+ http://code.google.com/p/ardu-imu/
+ 
+ MinIMU-9-Arduino-AHRS is free software: you can redistribute it and/or modify it
+ under the terms of the GNU Lesser General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or (at your option)
+ any later version.
+ 
+ MinIMU-9-Arduino-AHRS is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+ more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License along
+ with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
+ 
+ */
 #include <plib.h>
 #include <L3G4200D.h>
 #include <LSM303.h>
@@ -35,21 +35,22 @@ L3G4200D gyro;
 LSM303 compass;
 
 // Uncomment the below line to use this axis definition: 
-   // X axis pointing forward
-   // Y axis pointing to the right 
-   // and Z axis pointing down.
+// X axis pointing forward
+// Y axis pointing to the right 
+// and Z axis pointing down.
 // Positive pitch : nose up
 // Positive roll : right wing down
 // Positive yaw : clockwise
 //int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 // Uncomment the below line to use this axis definition: 
-   // X axis pointing forward
-   // Y axis pointing to the left 
-   // and Z axis pointing up.
+// X axis pointing forward
+// Y axis pointing to the left 
+// and Z axis pointing up.
 // Positive pitch : nose down
 // Positive roll : right wing down
 // Positive yaw : counterclockwise
-int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+int SENSOR_SIGN[9] = {
+  1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 
 // tested with Arduino Uno with ATmega328 and Arduino Duemilanove with ATMega168
 
@@ -84,12 +85,12 @@ int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro
 
 
 
-int gyro_x;
-int gyro_y;
-int gyro_z;
-int accel_x;
-int accel_y;
-int accel_z;
+float gyro_x;
+float gyro_y;
+float gyro_z;
+float accel_x;
+float accel_y;
+float accel_z;
 
 
 // LSM303 magnetometer calibration constants; use the Calibrate example from
@@ -112,7 +113,7 @@ long timer=0;   //general purpuse timer
 long timer_old;
 
 int AN[6]; //array that stores the gyro and accelerometer data
-int AN_OFFSET[6]={0,0,0,0,0,0}; //Array that stores the Offset of the sensors
+float AN_OFFSET[6]={0,0,0,0,0,0}; //Array that stores the Offset of the sensors
 
 int throttle = 0;
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
@@ -144,8 +145,8 @@ long int Range=0;
 float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
-  float consKp=1.5, consKi=0.00, consKd=0.3500;
-  float initKp=1.5, initKi=0.1500, initKd=0.3500;
+float consKp=1.5, consKi=0.00, consKd=0.3500;
+float initKp=1.5, initKi=0.1500, initKd=0.3500;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 
@@ -166,124 +167,70 @@ PID PitchPID(&pitch, &E_pitch, &D_pitch, initKp, initKi, initKd, DIRECT);
 void setup()
 { 
   Serial.begin(115200);
-  
-  
-  //pinMode (STATUS_LED,OUTPUT);  // Status LED
-  
+
   I2C_Init();
-
-
-  Serial.println("Pololu MinIMU-9 + Arduino AHRS");
-  //digitalWrite(STATUS_LED,LOW);
+  Serial.println("Senior Design Quadcopter");
   delay(1500);
-  
+
   Gyro_Init();
   Accel_Init();
-//  Compass_Init();
-  
-  delay(20);
-  Serial.println("Offset:");
-  for(int i=0;i<64;i++)    // We take some readings...
-    {
-    Read_Accel();
-    for(int y=3; y<6; y++)   // Cumulate values
-      AN_OFFSET[y] += AN[y];
-    delay(20);
-    
-    }
-    
-  for(int y=3; y<6; y++)
-    AN_OFFSET[y] = AN_OFFSET[y]/64;
-    
-  AN_OFFSET[5]-=GRAVITY*SENSOR_SIGN[5];
-  collect_offsets();
-  
-//  for(int y=0; y<6; y++)
-//    Serial.println(AN_OFFSET[y]);
-  
-//  delay(2000);
-//  digitalWrite(STATUS_LED,HIGH);
-    
+  //  Compass_Init();
 
   delay(20);
-  counter=0;
+  Serial.println("Offsets: Please wait 1 minute.");
+  collect_offsets();
+
   initPID();  //Initialize PID
   radio_init(); // Initialize radio (serial1)
-//  range_init();  //Initialize Range finder (PWM 5)
+  //  range_init();  //Initialize Range finder (PWM 5)
   ArmMotor();    //Initialize Motor signal (PWM 1-4)
   start_GDt_Clock();  //Initilize update clock (Timer 4 and 5 in 32 bit mode)
- 
- // timer=micros();
-G_Dt = 1.0/800.0;
+
+  G_Dt = 1.0/800.0;
 }
 
 void loop() //Main Loop
 {
- 
-  
   radio_check();
   if(IFS0&0x00100000)  // Main loop runs at LOOP_FREQ **see top of code to set (use 50/100/200 for good results)
   {
     IFS0CLR = 0x00100000;
-   // counter++;
-    rangeCounter++;
-   // timer_old = timer;
-   // timer=micros();
+    //    rangeCounter++;
 
-   // G_Dt = (timer-timer_old)/1000000.0;    // Real time of loop run. We use this on the DCM algorithm (gyro integration time)
- //   G_Dt = LOOP_TIME/1000.0;    // Use when loop time is very consistant to avoid math or extra overhead.
-   
     // *** DCM algorithm
     // Data adquisition
-    
-    //G_Dt = Read_Gyro()*.005;   // This read gyro data
+    //     Read_Compass();    // Read I2C magnetometer
+    //     Compass_Heading(); // Calculate magnetic heading  
+
     Read_Accel();     // Read I2C accelerometer
     Update_Matrix();
-    //MadgwickAHRSupdateIMU(Gyro_Scaled_X(gyro_x), Gyro_Scaled_X(gyro_y), Gyro_Scaled_X(gyro_z),accel_x, accel_y, accel_z);
 
-//    #if FILTER_ROLL_PITCH
-//
-//    sum_Pitch = (sum_Pitch - filter_Pitch[FC1]) + pitch;
-//    filter_Pitch[FC1] = pitch;
-//    pitch = sum_Pitch/FILTER_SIZE_2;
-// 
-//    sum_Roll = (sum_Roll - filter_Roll[FC1]) + roll;
-//    filter_Roll[FC1] = roll;
-//    roll = sum_Roll/FILTER_SIZE_2;
-//
-//    FC1 = (FC1 + 1)%FILTER_SIZE_2;
-//    #endif
-//    
-   // if (counter > (LOOP_FREQ/50))  // Read compass data at 50Hz... (5 loop runs)
-     // {
-   //   counter=0;
- //     Read_Compass();    // Read I2C magnetometer
- //     Compass_Heading(); // Calculate magnetic heading  
-      
-      updatePID();
-      updateMotor();   
+    //     Read_Compass();    // Read I2C magnetometer
+    //     Compass_Heading(); // Calculate magnetic heading  
+
+    updatePID();
+    updateMotor();   
 
 
-   // }
     if (rangeCounter > (LOOP_FREQ/10))  // Read Range data at 10Hz... (10 loop runs)
-      {
-        rangeCounter = 0;
-        range_start();
-        //add code for GPS and BMP085 here!!!!
-       // Serial.println("PING...");
-      }
+    {
+      rangeCounter = 0;
+      range_start();
+      //add code for GPS and BMP085 here!!!!
+      // Serial.println("PING...");
+    }
     if(range_available()){  //Is there a captured time to get from range finder?
       Range = range_get();
       //Serial.print("Range = ");
       //Serial.println(Range);
     }
-    
-  if(counter == 0){
-     // Serial.println(G_Dt,9);
-//      Serial.print(roll);
-//      Serial.print(", ");
-//      Serial.print(D_roll);
-//       Serial.print("      ");
+
+    if(counter == 0){
+      // Serial.println(G_Dt,9);
+      //      Serial.print(roll);
+      //      Serial.print(", ");
+      //      Serial.print(D_roll);
+      //       Serial.print("      ");
       Serial.print(pitch);
       Serial.print(", ");
       Serial.print(D_pitch);
@@ -291,25 +238,26 @@ void loop() //Main Loop
       Serial.print(throttle);
       Serial.print(", ");
       Serial.println(E_pitch);
-// Serial.print(" M ");  
-//  Serial.print("X: ");
-//  Serial.print(AN[3]);
-//  Serial.print(" Y: ");
-//  Serial.print(AN[4]);
-//  Serial.print(" Z: ");
-//  Serial.print(AN[5]);
-//  
-//  Serial.print(" G ");
-//  Serial.print("X: ");
-//  Serial.print(AN[0]);
-//  Serial.print(" Y: ");
-//  Serial.print(AN[1]);
-//  Serial.print(" Z: ");
-//  Serial.println(AN[2]);
-//    
-  }
+      // Serial.print(" M ");  
+      //  Serial.print("X: ");
+      //  Serial.print(AN[3]);
+      //  Serial.print(" Y: ");
+      //  Serial.print(AN[4]);
+      //  Serial.print(" Z: ");
+      //  Serial.print(AN[5]);
+      //  
+      //  Serial.print(" G ");
+      //  Serial.print("X: ");
+      //  Serial.print(AN[0]);
+      //  Serial.print(" Y: ");
+      //  Serial.print(AN[1]);
+      //  Serial.print(" Z: ");
+      //  Serial.println(AN[2]);
+      //    
+    }
 
 
   }
-   
+
 }
+
