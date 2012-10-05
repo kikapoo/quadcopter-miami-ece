@@ -69,4 +69,4 @@ What we used to make our Quadcopter
   * D-pad left/right for yaw trim
   * Start for transmission begin
   * Select for turning on PID 
-  * L1/2 R1/2 used for more ans less aggressive movements</img>
+  * L1/2 !R1/2 used for more ans less aggressive movements</img>
