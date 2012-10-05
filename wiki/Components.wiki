@@ -1,0 +1,71 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+What we used to make our Quadcopter
+
+
+= PARTS =
+
+==Processor: CHIPKIT UNO32== 
+ <img style="-webkit-user-select: none; cursor: -webkit-zoom-in; " src="http://www.digilentinc.com/Data/Products/CHIPKIT-UNO32/chipKIT-Uno32-obl-500.jpg" align="right" width="332" height="287"> 
+  * Microchip® *PIC32MX320F128* processor
+    * 80 Mhz 32-bit MIPS
+    * 128K Flash, 16K SRAM
+  * Compatible with many existing Arduino™ code examples, reference materials and other resources
+  * Can also be programmed using Microchip's MPLAB® IDE (along with a PICkit 3 and our PICkit3 Programming Cable Kit, seen below)
+  * Arduino™ "Uno" form factor
+  * Compatible with many Arduino™ shields
+  * 42 available I/O
+  * User LED
+  * Connects to a PC using a USB A -> mini B cable (not included)
+</img>
+-------
+==IMU: MiniIMU-9==
+ <img style="-webkit-user-select: none; cursor: -webkit-zoom-in; " src="http://a.pololu-files.com/picture/0J3682.600.jpg?278abeb8062c0387d940e69c56e8e0c4" align="right" width="271" height="192">
+  * *L3G4200D* Gyro
+    * ±250, ±500, or ±2000°/s (gyro)
+    * 100-800Hz Data Rate
+    * High and Low Pass Filtering
+    * 32 Level FIFO
+  * *LSM303DLM*
+    * ±2, ±4, or ±8 g (accelerometer)
+    * ±1.3, ±1.9, ±2.5, ±4.0, ±4.7, ±5.6, or ±8.1 gauss (magnetometer)
+    * High and Low pass Filtering
+</img>
+------
+==FRAME==
+<img src="http://i.ebayimg.com/t/X450-Carbon-Fiber-4-Axix-Multi-Copter-Quadcopter-Frame-/00/s/NTMxWDYwMA==/$(KGrHqVHJCEE+Ukf6385BQN!IDsteQ~~60_3.JPG" align="right" width="216" height="192">
+  * All made ​​of carbon fiber materials made ​​by the high-precision CNC 
+  * With high strength and low weight advantages, Empty Weight 200g
+  * Motor Mount bracket aluminum and carbon fiber tubes are connected, the  structure is simple and reliable, according to the propeller to be adjusted  with the wheelbase.
+</img>
+------
+==MOTORS==
+<img src="http://image.made-in-china.com/2f0j00SMjtHRWrYcfq/Mystery-A2217k-9-950kv-Brushless-Outrunner-Motor-for-300g-800g-3D-Flight.jpg" align="right" width="166" height="166">
+------
+==ESC==
+<img src="http://i.ebayimg.com/t/Hobbywing-Skywalker-20A-2A-BEC-Brushless-ESC-for-Quadcopter-Multicopter-4-Pack-/00/s/NjAwWDYwMA==/$(KGrHqV,!rcE88g9ecKUBPSv(OruIg~~60_1.JPG" align="right">
+  * 12 volt Electronic Speed Controller
+  * 1-2ms pulse @ 50Hz for min-max speed
+  * Programable settings
+  * 5-volt regulated supply to feed control circuitry
+  * 3-phase output for brushless motors
+------
+==RADIO LINK: Parallax 433 MHz RF Receiver\Transmitter==
+<img src="http://www.parallaxdirect.com/cart/images/products/detail_213_27981-M.jpg" align="right">
+<img style="-webkit-user-select: none" src="http://www.parallaxdirect.com/cart/images/products/detail_215_27980-M.jpg" align="right">
+  * Power: 5V +/-10%
+  * Current: ~10 mA normal operation & ~3mA during power down
+  * Data Rate: 12,000 - 19.2 K baud (controller dependent)
+  * Frequency: 433.92 Mhz (UHF)
+  * Transmission 500 ft+, based on environment conditions. 
+</img>
+------
+==REMOTE CONTROL: PS2 Controller==
+<img src="http://www.consolepassion.co.uk/sites/default/files/imagecache/product/sony-playstation-controller-clear-blue-loose.jpg" align="right">
+  * Analog control for flight
+  * D-pad up/down for throttle set 
+  * D-pad left/right for yaw trim
+  * Start for transmission begin
+  * Select for turning on PID </img>
