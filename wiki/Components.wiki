@@ -25,7 +25,7 @@ What we used to make our Quadcopter
  <img style="-webkit-user-select: none; cursor: -webkit-zoom-in; " src="http://a.pololu-files.com/picture/0J3682.600.jpg?278abeb8062c0387d940e69c56e8e0c4" align="right" width="271" height="192">
 
 
-  * *L3G4200D* ([http://quadcopter-miami-ece.googlecode.com/files/L3G4200D.pdf datasheet])
+  * *L3G4200D* ([http://quadcopter-miami-ece.googlecode.com/files/L3G4200D.pdf datasheet])([http://quadcopter-miami-ece.googlecode.com/files/27911-GyroscopeAppNote2.pdf App Note])
     * ±250, ±500, or ±2000°/s (gyro)
     * 100-800Hz Data Rate
     * High and Low Pass Filtering
@@ -48,6 +48,7 @@ What we used to make our Quadcopter
 ------
 ==ESC==
 <img src="http://i.ebayimg.com/t/Hobbywing-Skywalker-20A-2A-BEC-Brushless-ESC-for-Quadcopter-Multicopter-4-Pack-/00/s/NjAwWDYwMA==/$(KGrHqV,!rcE88g9ecKUBPSv(OruIg~~60_1.JPG" align="right">
+  * [http://quadcopter-miami-ece.googlecode.com/files/ESC%20HW.pdf Manual]
   * 12 volt Electronic Speed Controller
   * 1-2ms pulse @ 50Hz for min-max speed
   * Programable settings
@@ -57,6 +58,7 @@ What we used to make our Quadcopter
 ==RADIO LINK: Parallax 433 MHz RF Receiver\Transmitter==
 <img src="http://www.parallaxdirect.com/cart/images/products/detail_213_27981-M.jpg" align="right">
 <img style="-webkit-user-select: none" src="http://www.parallaxdirect.com/cart/images/products/detail_215_27980-M.jpg" align="right">
+  * [http://quadcopter-miami-ece.googlecode.com/files/RF%2BDatasheet.pdf Datasheet]
   * Power: 5V +/-10%
   * Current: ~10 mA normal operation & ~3mA during power down
   * Data Rate: 12,000 - 19.2 K baud (controller dependent)
