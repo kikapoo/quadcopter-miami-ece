@@ -21,7 +21,7 @@ What we used to make our Quadcopter
   * Connects to a PC using a USB A -> mini B cable (not included)
 </img>
 -------
-==IMU: MiniIMU-9==
+==IMU: [http://www.pololu.com/catalog/product/1265 MiniIMU-9]==
  <img style="-webkit-user-select: none; cursor: -webkit-zoom-in; " src="http://a.pololu-files.com/picture/0J3682.600.jpg?278abeb8062c0387d940e69c56e8e0c4" align="right" width="271" height="192">
   * *L3G4200D* Gyro
     * ±250, ±500, or ±2000°/s (gyro)
