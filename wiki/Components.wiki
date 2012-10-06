@@ -23,12 +23,14 @@ What we used to make our Quadcopter
 -------
 ==IMU: [http://www.pololu.com/catalog/product/1265 MiniIMU-9]==
  <img style="-webkit-user-select: none; cursor: -webkit-zoom-in; " src="http://a.pololu-files.com/picture/0J3682.600.jpg?278abeb8062c0387d940e69c56e8e0c4" align="right" width="271" height="192">
-  * *L3G4200D* Gyro
+
+
+  * *L3G4200D* ([http://quadcopter-miami-ece.googlecode.com/files/L3G4200D.pdf datasheet])
     * ±250, ±500, or ±2000°/s (gyro)
     * 100-800Hz Data Rate
     * High and Low Pass Filtering
     * 32 Level FIFO
-  * *LSM303DLM*
+  * *LSM303DLM* ([http://quadcopter-miami-ece.googlecode.com/files/LSM303DLM.pdf  datasheet])
     * ±2, ±4, or ±8 g (accelerometer)
     * ±1.3, ±1.9, ±2.5, ±4.0, ±4.7, ±5.6, or ±8.1 gauss (magnetometer)
     * High and Low pass Filtering
