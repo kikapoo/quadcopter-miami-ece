@@ -7,7 +7,7 @@ What we used to make our Quadcopter
 
 = PARTS =
 
-==Processor: CHIPKIT UNO32== 
+==Processor: [http://www.digilentinc.com/Products/Detail.cfm?NavPath=2,892,893&Prod=CHIPKIT-UNO32 CHIPKIT UNO32]== 
  <img style="-webkit-user-select: none; cursor: -webkit-zoom-in; " src="http://www.digilentinc.com/Data/Products/CHIPKIT-UNO32/chipKIT-Uno32-obl-500.jpg" align="right" width="332" height="287"> 
   * Microchip® *PIC32MX320F128* processor
     * 80 Mhz 32-bit MIPS
