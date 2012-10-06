@@ -66,8 +66,9 @@ What we used to make our Quadcopter
   * Transmission 500 ft+, based on environment conditions. 
 </img>
 ------
-==REMOTE CONTROL: [http://www.billporter.info/playstation-2-controller-arduino-library-v1-0/  PS2 Controller]==
+==REMOTE CONTROL:   PS2 Controller==
 <img src="http://www.consolepassion.co.uk/sites/default/files/imagecache/product/sony-playstation-controller-clear-blue-loose.jpg" align="right">
+  * [http://store.curiousinventor.com/guides/PS2 How to Interface] [http://www.billporter.info/playstation-2-controller-arduino-library-v1-0/ Arduino Library]
   * Analog control for flight
   * D-pad up/down for throttle set 
   * D-pad left/right for yaw trim
