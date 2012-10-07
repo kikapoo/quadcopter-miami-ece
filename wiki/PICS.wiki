@@ -6,3 +6,5 @@ Various photos of our project.
 
 
 == Testing ==
+
+http://code.google.com/p/quadcopter-miami-ece/downloads/detail?name=Quadcopter.JPG
