@@ -20,4 +20,4 @@ Add your content here.  Format your content with:
 
 = PID Test =
 
- 
+<wiki:video url="http://www.youtube.com/watch?v=mohGb9-Vvdg&feature=plcp"/>
