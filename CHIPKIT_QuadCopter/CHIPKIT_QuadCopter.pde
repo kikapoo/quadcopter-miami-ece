@@ -205,9 +205,6 @@ void loop() //Main Loop
     Read_Accel();     // Read I2C accelerometer
     Update_Matrix();
 
-    //     Read_Compass();    // Read I2C magnetometer
-    //     Compass_Heading(); // Calculate magnetic heading  
-
     updatePID();
     updateMotor();   
 

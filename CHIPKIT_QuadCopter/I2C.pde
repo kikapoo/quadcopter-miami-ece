@@ -30,13 +30,13 @@
 
 #define FILTER_ACCEL 0
 #define FILTER_GYRO 0
-#define FILTER_SIZE 20
+#define FILTER_SIZE 10
 
 #if FILTER_ACCEL == 1
-int filter_X[FILTER_SIZE];
-int filter_Y[FILTER_SIZE];
-int filter_Z[FILTER_SIZE];
-int sum_X,sum_Y,sum_Z;
+float filter_X[FILTER_SIZE];
+float filter_Y[FILTER_SIZE];
+float filter_Z[FILTER_SIZE];
+float sum_X,sum_Y,sum_Z;
 #endif
 
 int FC = 0;
@@ -141,10 +141,10 @@ inline void Update_Matrix(void){
     gyro_x = (FIFO_data.Data[i][0]-AN_OFFSET[0])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.x;
     gyro_y = (FIFO_data.Data[i][1]-AN_OFFSET[1])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.y;
     gyro_z = (FIFO_data.Data[i][2]-AN_OFFSET[2])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.z;
-    if(i==0)
+   // if(i==0)
       MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,accel_x,accel_y,accel_z);
-    else
-      MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,0.0,0.0,0.0);
+   // else
+   //   MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,0.0,0.0,0.0);
   }
 
   roll = atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));

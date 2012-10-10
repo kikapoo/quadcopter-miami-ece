@@ -17,7 +17,7 @@ void radio_init(void){
  }
 int flag, last;
 int dummy;
-void radio_check(void){
+inline void radio_check(void){
     if(Serial1.available()) {
             dummy = Serial1.read();
              switch (RX_state) {
