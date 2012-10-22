@@ -91,7 +91,7 @@ float gyro_z;
 float accel_x;
 float accel_y;
 float accel_z;
-
+float temp;
 
 // LSM303 magnetometer calibration constants; use the Calibrate example from
 // the Pololu LSM303 library to find the right values for your board
@@ -121,8 +121,8 @@ volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sens
 // Euler angles
 float roll;
 float pitch;
-//float yaw;
-int yaw=0;
+float yaw;
+//int yaw=0;
 
 float D_roll = 0;
 float D_pitch = 0;
@@ -146,7 +146,7 @@ float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
 float consKp=1.5, consKi=0.00, consKd=0.3500;
-float initKp=1.5, initKi=0.1500, initKd=0.3500;
+float initKp=2, initKi=0.200, initKd=.5;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 
@@ -179,6 +179,17 @@ void setup()
   delay(20);
   Serial.println("Offsets: Please wait 1 minute.");
   collect_offsets();
+  Serial.println("Offsets=");
+  for(int i = 0; i<6;i++)
+    Serial.println(AN_OFFSET[i],9);
+
+//AN_OFFSET[0]=12.512920380;
+//AN_OFFSET[1]=-10.521800041;
+//AN_OFFSET[2]=-4.051559925;
+//AN_OFFSET[3]=9.877433777;
+//AN_OFFSET[4]=-11.827033043;
+//AN_OFFSET[5]=-10.572357178;
+
 
   initPID();  //Initialize PID
   radio_init(); // Initialize radio (serial1)
@@ -228,13 +239,22 @@ void loop() //Main Loop
       //      Serial.print(", ");
       //      Serial.print(D_roll);
       //       Serial.print("      ");
-      Serial.print(pitch);
-      Serial.print(", ");
-      Serial.print(D_pitch);
-      Serial.print(", ");
+      Serial.print("!");
+      Serial.print("ANG:");
+      Serial.print(roll,3);
+      Serial.print(",");
+      Serial.print(pitch,3);
+      Serial.print(",");
+      Serial.print(yaw,3);
+      Serial.print(",");
+      Serial.print(D_roll,3);
+      Serial.print(",");
+      Serial.print(D_pitch,3);
+      Serial.print(",");
       Serial.print(throttle);
-      Serial.print(", ");
-      Serial.println(E_pitch);
+      Serial.print(",");
+      Serial.print(E_pitch);
+      Serial.print(",");
       // Serial.print(" M ");  
       //  Serial.print("X: ");
       //  Serial.print(AN[3]);
@@ -250,7 +270,8 @@ void loop() //Main Loop
       //  Serial.print(AN[1]);
       //  Serial.print(" Z: ");
       //  Serial.println(AN[2]);
-      //    
+      Serial.println(temp);
+      
     }
 
 

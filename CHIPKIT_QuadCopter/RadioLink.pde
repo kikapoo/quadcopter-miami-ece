@@ -17,6 +17,7 @@ void radio_init(void){
  }
 int flag, last;
 int dummy;
+//float temp;
 inline void radio_check(void){
     if(Serial1.available()) {
             dummy = Serial1.read();
@@ -24,8 +25,10 @@ inline void radio_check(void){
                 case 0:
                     if (dummy == 0xB5) //button pressed recieved
                         RX_state = 1;
-                    if(dummy == 0xC5)
+                    if(dummy == 0xC5)//Activat PID
                         RX_state = 3;
+                    if(dummy == 0xD5)
+                      RX_state = 4;
                      break;
                 case 1: //recieving x y data from controller
                     if (dummy == 0x5C) //button pressed recieved
@@ -33,7 +36,7 @@ inline void radio_check(void){
                     else
                         RX_state = 0;
                     break;
-                case 2: //Button release recived
+                case 2: //Roll Pitch Throttle Commands
                     RX_data.B[RX_count++] =dummy;
                     if (RX_count > 16) {
                         flag = false;  //Reset flag that shuts down motors
@@ -51,12 +54,38 @@ inline void radio_check(void){
                                     } 
                    break; 
                 case 3:
-                  if(dummy == 0x5B){
+                  if(dummy == 0x5B){//PID Activation
                       RollPID.SetMode(AUTOMATIC);
                       PitchPID.SetMode(AUTOMATIC);
                   }
                   RX_state = 0;
                   break;
+                case 4:
+                  if(dummy == 0x5D){//PID Tuning loop
+                    RX_state = 5;
+                    
+                   } else
+                        RX_state = 0;
+                    break;
+                 case 5:
+                    RX_data.B[RX_count++] =dummy;
+                    if (RX_count > 1) {
+                        temp=RX_data.B[0]*1.0+RX_data.B[1]*0.1;
+                        flag = false;  //Reset flag that shuts down motors
+                        RX_count = 0;
+                        RX_state = 0;
+                       //   RollPID.SetTunings(RX_data.F[0],0.0,0.0);
+                       PitchPID.SetTunings(temp,0.0,0.0);
+                       // Serial.print("packet Received");
+                       Serial.print("PID RX ");
+                       Serial.print(RX_data.B[0]);
+                       Serial.print(" ");
+                       Serial.println(RX_data.B[1]);
+                                   } 
+                   break; 
+                 
+                 
+                 
              }
       }else{
         if(flag){
@@ -65,7 +94,7 @@ inline void radio_check(void){
             D_pitch = 0.0;
             throttle -= 200;
             last = millis();
-            Serial.print("No Signal");
+          //  Serial.print("No Signal");
           }
           
           
