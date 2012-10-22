@@ -32,6 +32,8 @@ long int rateINT;
 float rateFLOAT;
 float RPscale, YTscale;
 byte syncBytes[4];
+byte pidBytes[2];
+boolean sendPID;
 
 
 void setup(){
@@ -40,13 +42,29 @@ syncBytes[0]=0x55;
 syncBytes[1]=0xAA;
 syncBytes[2]=0xB5;
 syncBytes[3]=0x5C; 
+
+pidBytes[0] = 0x01;
+pidBytes[1] = 0x00;
+
+sendPID = false;
+
   
  Serial1.begin(2400);
  Serial.begin(57600);
 
  //CHANGES for v1.6 HERE!!! **************PAY ATTENTION*************
   
- error = ps2x.config_gamepad(13,11,10,12, true, true);   //setup pins and settings:  GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
+ error = ps2x.config_gamepad(13,11,10,12, true, true);   
+ /*
+ _________________________________________________________________________________________________________________________________
+ \             |              |          |+|          |         |               |+|              |           |                   /
+  \ (brn-data) | (orng-comnd) | (*grey*) |+| (ground) | (power) | (yellow-attn) |+| (blue-clock) | (*white*) | (*green*-ack)    /
+   \___________|______________|__________|+|__________|_________|_______________|+|______________|___________|_________________/
+ */
+                                      
+                                      
+//http://store.curiousinventor.com/guides/ps2                                      
+ //setup pins and settings:  GamePad(clock, command, attention, data, Pressures?, Rumble?) check for error
  
  if(error == 0){
    Serial.println("Found Controller, configured successful");
@@ -192,6 +210,42 @@ void loop(){
         syncBytes[2]=0xB5;
         syncBytes[3]=0x5C; 
      }
+     
+     ////////////////////////////////////////////////////////
+     //pidBytes
+
+     if(ps2x.ButtonReleased(PSB_TRIANGLE) && ps2x.Button(PSB_R2)) {
+       pidBytes[0] = pidBytes[0] + 1;
+       syncBytes[2]=0xD5;
+       syncBytes[3]=0x5D;
+       sendPID = true;
+     }
+
+     if(ps2x.ButtonReleased(PSB_TRIANGLE)) {
+         pidBytes[1] = pidBytes[1] + 1;
+         syncBytes[2]=0xD5;
+         syncBytes[3]=0x5D;
+         sendPID = true;
+     }
+
+     if(ps2x.ButtonReleased(PSB_CROSS) && ps2x.Button(PSB_R2)) {
+        pidBytes[0] = pidBytes[0] - 1;
+         syncBytes[2]=0xD5;
+         syncBytes[3]=0x5D;
+         sendPID = true;
+     }
+
+     if(ps2x.ButtonReleased(PSB_CROSS)) {
+                   
+       pidBytes[1] = pidBytes[1] - 1;
+       syncBytes[2]=0xD5;
+       syncBytes[3]=0x5D;
+       sendPID = true;
+     }
+
+////////////////////////////////////////////////////////////////////////////
+     
+     
 
     throttle.I = throttleFix+throttleAnalog;
     yaw.I = yawFix+yawAnalog;
@@ -205,54 +259,72 @@ void loop(){
     
     Serial.println("");
     
-    //Send roll Bytes
-    Serial.println("Roll Bytes");
-    for(int i = 0;i < 4; i++ ){
-      Serial1.write(roll.B[i]);
-      Serial.print(roll.B[i],HEX);
-    }
-
-    Serial.print("  ");
-    Serial.print(roll.F);
-    Serial.println("  ");
-    
-    //Send pitch bytes
-    Serial.println("Pitch Bytes");
-    for(int i = 0;i < 4; i++) {
-      Serial1.write(pitch.B[i]);
-      Serial.print(pitch.B[i],HEX);
-    }
-    Serial.print("  ");
-    Serial.print(pitch.F);
-    Serial.println("  ");
-    
-    //Send throttle bytes
-    //if(printCount == 1000) {
-    Serial.print("Throttle Bytes");
-   // }
-    
-    for(int i = 0;i < 4; i++) {
-      Serial1.write(throttle.B[i]);
-      Serial.print(throttle.B[i],DEC);
+    if(sendPID) {
+        Serial.println("PID Bytes");
+        for(int i = 0;i < 2; i++ ){
+        Serial1.write(pidBytes[i]);
       }
-    Serial.print("  ");
-    Serial.print(throttle.I);
-    Serial.println("  ");
-    Serial.println("");
-
-    Serial.print("Yaw Bytes");
-
-    for(int i = 0;i < 4; i++) {
-      Serial1.write(yaw.B[i]);
-      Serial.print(yaw.B[i],DEC);
+    }
+    
+    if(!sendPID) {
+      //Send roll Bytes
+      Serial.println("Roll Bytes");
+      for(int i = 0;i < 4; i++ ){
+        Serial1.write(roll.B[i]);
+        Serial.print(roll.B[i],HEX);
       }
-    Serial.print("  ");
-    Serial.print(yaw.I);
-    Serial.println("  ");
-    Serial.println("");
+  
+      Serial.print("  ");
+      Serial.print(roll.F);
+      Serial.println("  ");
+      
+      //Send pitch bytes
+      Serial.println("Pitch Bytes");
+      for(int i = 0;i < 4; i++) {
+        Serial1.write(pitch.B[i]);
+        Serial.print(pitch.B[i],HEX);
+      }
+      Serial.print("  ");
+      Serial.print(pitch.F);
+      Serial.println("  ");
+      
+      //Send throttle bytes
+      //if(printCount == 1000) {
+      Serial.print("Throttle Bytes");
+     // }
+      
+      for(int i = 0;i < 4; i++) {
+        Serial1.write(throttle.B[i]);
+        Serial.print(throttle.B[i],DEC);
+        }
+      Serial.print("  ");
+      Serial.print(throttle.I);
+      Serial.println("  ");
+      Serial.println("");
+  
+      Serial.print("Yaw Bytes");
+  
+      for(int i = 0;i < 4; i++) {
+        Serial1.write(yaw.B[i]);
+        Serial.print(yaw.B[i],DEC);
+        }
+      Serial.print("  ");
+      Serial.print(yaw.I);
+      Serial.println("  ");
+      Serial.println("");
+      
+      Serial.print("PID BYTES");
+      Serial.print(pidBytes[0] + pidBytes[1]*0.1,DEC);
+
+      
+      
+      Serial.println("");
+    }
 
    delay(50);
-  
+   if(sendPID) {
+     sendPID = !sendPID; 
+   }
    printCount++;
 
    }
