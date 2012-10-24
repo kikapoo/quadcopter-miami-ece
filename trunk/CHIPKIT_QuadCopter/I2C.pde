@@ -64,21 +64,21 @@ byte Gyro_Init()
 
 }
 
-void Accel_Init()
-{
-  compass.writeAccReg(LSM303_CTRL_REG4_A, 0x30); // 8 g full scale
-  //  compass.writeAccReg(LSM303_CTRL_REG2_A, 0x10); // Enable H.P. filter @50=1Hz @100=2Hz @400=8Hz @1000=20Hz
-
-  compass.writeAccReg(LSM303_CTRL_REG1_A, 0x27); // normal power mode, all axes enabled, 50 Hz
-  // compass.writeAccReg(LSM303_CTRL_REG1_A, 0x2F); // normal power mode, all axes enabled, 100 Hz
-  //compass.writeAccReg(LSM303_CTRL_REG1_A, 0x37); // normal power mode, all axes enabled, 400 Hz
-
-}
+//void Accel_Init()
+//{
+//  compass.writeAccReg(LSM303_CTRL_REG4_A, 0x30); // 8 g full scale
+//  //  compass.writeAccReg(LSM303_CTRL_REG2_A, 0x10); // Enable H.P. filter @50=1Hz @100=2Hz @400=8Hz @1000=20Hz
+//
+//  compass.writeAccReg(LSM303_CTRL_REG1_A, 0x27); // normal power mode, all axes enabled, 50 Hz
+//  // compass.writeAccReg(LSM303_CTRL_REG1_A, 0x2F); // normal power mode, all axes enabled, 100 Hz
+//  //compass.writeAccReg(LSM303_CTRL_REG1_A, 0x37); // normal power mode, all axes enabled, 400 Hz
+//
+//}
 
 // Reads x,y and z accelerometer registers
 inline void Read_Accel()
 {
-  compass.readAcc();
+  //compass.readAcc();
 #if FILTER_ACCEL == 1
   compass.readAcc();
   sum_X = (sum_X - filter_X[FC]) + compass.a.x;
@@ -99,30 +99,30 @@ inline void Read_Accel()
   accel_z = SENSOR_SIGN[5] * (AN[5] - AN_OFFSET[5]);
 
   #else
-  
-  AN[3] = compass.a.x;
-  AN[4] = compass.a.y;
-  AN[5] = compass.a.z;
+  compass.readAccel(&AN[3],&AN[4] ,&AN[5]);  
+//  AN[3] = compass.a.x;
+//  AN[4] = compass.a.y;
+//  AN[5] = compass.a.z;
   
   #endif
 
-  accel_x = SENSOR_SIGN[3] * (AN[3] - AN_OFFSET[3]);
-  accel_y = SENSOR_SIGN[4] * (AN[4] - AN_OFFSET[4]);
-  accel_z = SENSOR_SIGN[5] * (AN[5] - AN_OFFSET[5]);
+  accel_x = SENSOR_SIGN[3] * (AN[3]);
+  accel_y = SENSOR_SIGN[4] * (AN[4]);
+  accel_z = SENSOR_SIGN[5] * (AN[5]);
   
   #if FILTER_ACCEL == 1
   FC = (FC + 1)%FILTER_SIZE;  
   #endif
 }
 
-void Compass_Init()
-{
-  compass.init();
-  compass.writeMagReg(LSM303_MR_REG_M, 0x00); // continuous conversion mode
-  compass.writeMagReg(LSM303_CRA_REG_M, 0x1C); // 75 Hz
-
-  // 15 Hz default
-}
+//void Compass_Init()
+//{
+//  compass.init();
+//  compass.writeMagReg(LSM303_MR_REG_M, 0x00); // continuous conversion mode
+//  compass.writeMagReg(LSM303_CRA_REG_M, 0x1C); // 75 Hz
+//
+//  // 15 Hz default
+//}
 
 inline void Update_Matrix(void){
   byte FIFOcnt;
@@ -141,10 +141,10 @@ inline void Update_Matrix(void){
     gyro_x = (FIFO_data.Data[i][0]-AN_OFFSET[0])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.x;
     gyro_y = (FIFO_data.Data[i][1]-AN_OFFSET[1])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.y;
     gyro_z = (FIFO_data.Data[i][2]-AN_OFFSET[2])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.z;
-   // if(i==0)
+    if(i==0)
       MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,accel_x,accel_y,accel_z);
-   // else
-   //   MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,0.0,0.0,0.0);
+    else
+      MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,0.0,0.0,0.0);
   }
 
   roll = atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
@@ -171,7 +171,7 @@ void collect_offsets(void){
     Read_Accel();
     FIFOcnt = gyro.readFIFOdepth();
     gyro.readFIFO(FIFO_data.buf, FIFOcnt);
-   // Serial.println((int)FIFOcnt);
+   Serial.println((int)FIFOcnt);
     for(int i=0; i<FIFOcnt;i++){
       AN_OFFSET[0] += FIFO_data.Data[i][0]; 
       AN_OFFSET[1] += FIFO_data.Data[i][1]; 

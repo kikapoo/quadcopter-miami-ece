@@ -29,11 +29,11 @@
  */
 #include <plib.h>
 #include <L3G4200D.h>
-#include <LSM303.h>
-
+//#include <LSM303.h>
+#include <ADXL345.h>
 L3G4200D gyro;
-LSM303 compass;
-
+//LSM303 compass;
+ADXL345 compass;
 // Uncomment the below line to use this axis definition: 
 // X axis pointing forward
 // Y axis pointing to the right 
@@ -146,7 +146,7 @@ float aggKp=4, aggKi=0.2, aggKd=1;
 //float consKp=.5, consKi=0.025, consKd=0.125;
 
 float consKp=1.5, consKi=0.00, consKd=0.3500;
-float initKp=2, initKi=0.200, initKd=.5;
+float initKp=.9, initKi=1.5, initKd=.135;
 
 //float initKp=.5, initKi=0.025, initKd=0.125;
 
@@ -173,12 +173,15 @@ void setup()
   delay(1500);
 
   Gyro_Init();
-  Accel_Init();
+ // Accel_Init();
   //  Compass_Init();
-
+  compass.powerOn();
+  compass.set_bw(ADXL345_BW_12);
+  compass.setAxisOffset(0, 0, 0);
   delay(20);
   Serial.println("Offsets: Please wait 1 minute.");
   collect_offsets();
+  compass.setAxisOffset(-AN_OFFSET[3]/4, -AN_OFFSET[4]/4,-(AN_OFFSET[5]-256)/4);
   Serial.println("Offsets=");
   for(int i = 0; i<6;i++)
     Serial.println(AN_OFFSET[i],9);
