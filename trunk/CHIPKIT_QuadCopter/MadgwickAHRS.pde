@@ -13,23 +13,9 @@
 //=====================================================================================================
 
 //---------------------------------------------------------------------------------------------------
-// Header files
-
-
-//#include <math.h>
-
-//---------------------------------------------------------------------------------------------------
-// Definitions
-
-#define sampleFreq	100.0f //512.0f		// sample frequency in Hz
-#define betaDef		0.8		// 2 * proportional gain
-//#define betaDef		0.1f		// 2 * proportional gain
-//#define betaDef		0.01f		// 2 * proportional gain
-
-//---------------------------------------------------------------------------------------------------
 // Variable definitions
 
-volatile float beta = betaDef;								// 2 * proportional gain (Kp)
+volatile float beta = betaDef;	// 2 * proportional gain (Kp)
 
 //---------------------------------------------------------------------------------------------------
 // Function declarations
@@ -138,12 +124,6 @@ inline void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay,
 	q1 *= recipNorm;
 	q2 *= recipNorm;
 	q3 *= recipNorm;
-        //Source
-	//http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-
-        roll = atan2(2*(q0q1+q2q3), 1-2*(q1q1+q2q2));
-        pitch =  asin(2*(q0q2-q1q3));
-        yaw = atan2(2*(q0q3+q1q2), 1-2*(q2q2+q3q3));
 
 }
 
@@ -216,9 +196,32 @@ inline void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float 
 	q1 *= recipNorm;
 	q2 *= recipNorm;
 	q3 *= recipNorm;
-        roll = atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
-        pitch =  asin(2*(q0*q2-q1*q3));
-        yaw = atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3));
+
+}
+
+//update IMU on only gyro input
+inline void MadgwickAHRSupdateGyroIMU(float gx, float gy, float gz) {
+	float recipNorm;
+	float qDot1, qDot2, qDot3, qDot4;
+
+	// Rate of change of quaternion from gyroscope
+	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
+	qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
+	qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
+	qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
+
+	// Integrate rate of change of quaternion to yield quaternion
+	q0 += qDot1 * G_Dt;//(1.0f / (gyro sample Freq));
+	q1 += qDot2 * G_Dt;//(1.0f /  (gyro sample Freq)));
+	q2 += qDot3 * G_Dt;//(1.0f /  (gyro sample Freq)));
+	q3 += qDot4 * G_Dt;//(1.0f /  (gyro sample Freq)));
+
+	// Normalise quaternion
+	recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
+	q0 *= recipNorm;
+	q1 *= recipNorm;
+	q2 *= recipNorm;
+	q3 *= recipNorm;
 
 }
 
