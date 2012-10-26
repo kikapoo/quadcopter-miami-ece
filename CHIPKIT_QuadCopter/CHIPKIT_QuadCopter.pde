@@ -31,6 +31,9 @@
 #include <L3G4200D.h>
 //#include <LSM303.h>
 #include <ADXL345.h>
+#include <Wire.h>
+#include <PID_v1.h>
+
 L3G4200D gyro;
 //LSM303 compass;
 ADXL345 compass;
@@ -49,18 +52,22 @@ ADXL345 compass;
 // Positive pitch : nose down
 // Positive roll : right wing down
 // Positive yaw : counterclockwise
-int SENSOR_SIGN[9] = {
-  1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+//int SENSOR_SIGN[9] = {
+//  1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 
 // tested with Arduino Uno with ATmega328 and Arduino Duemilanove with ATMega168
 
-#include <Wire.h>
-#include <PID_v1.h>
 
-#define FILTER_ROLL_PITCH 0
+#define ACCEL_NOISE_CHECK 1 //Checks the magnitude of accel and ensures it is within tolerance
 
-#define LOOP_FREQ 50  //choose 50,100, or 200
-#define LOOP_TIME 1000/LOOP_FREQ  //in ms
+#define SAMPLE_FREQ	800 // sample frequency of Gyro in Hz (use 100, 200, 400, 800)
+#define betaDef		0.8f    // 2 * proportional gain wieght of Accel for IMU update
+#define G_Dt 1.0f/SAMPLE_FREQ   // Gyro Sample time 
+
+
+#define LOOP_FREQ 50  //choose 50,100, or 200 Hz
+#define LOOP_TIME 1000/LOOP_FREQ  //Loop update time in ms
+#define PID_BOUND 2.0f  //+/- PID limit for Roll and Pitch PIDs
 // LSM303 accelerometer: 8 g sensitivity
 // 3.8 mg/digit; 1 g = 256
 #define GRAVITY 256  //this equivalent to 1G in the raw data coming from the accelerometer 
@@ -70,20 +77,8 @@ int SENSOR_SIGN[9] = {
 
 // L3G4200D gyro: 2000 dps full scale
 // 70 mdps/digit; 1 dps = 0.07
-#define Gyro_Gain_X 0.07 //X axis Gyro gain
-#define Gyro_Gain_Y 0.07 //Y axis Gyro gain
-#define Gyro_Gain_Z 0.07 //Z axis Gyro gain
-#define Gyro_Scaled_X(x) ((x)*ToRad(Gyro_Gain_X)) //Return the scaled ADC raw data of the gyro in radians for second
-#define Gyro_Scaled_Y(x) ((x)*ToRad(Gyro_Gain_Y)) //Return the scaled ADC raw data of the gyro in radians for second
-#define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z)) //Return the scaled ADC raw data of the gyro in radians for second
-
-
-#define Kp_ROLLPITCH 0.02
-#define Ki_ROLLPITCH 0.00002
-#define Kp_YAW 1.2
-#define Ki_YAW 0.00002
-
-
+#define Gyro_Gain 0.07 //X axis Gyro gain
+#define Gyro_Gain_Rad  Gyro_Gain*0.01745329252
 
 float gyro_x;
 float gyro_y;
@@ -91,23 +86,9 @@ float gyro_z;
 float accel_x;
 float accel_y;
 float accel_z;
-float temp;
 
-// LSM303 magnetometer calibration constants; use the Calibrate example from
-// the Pololu LSM303 library to find the right values for your board
-//#define M_X_MIN -796
-//#define M_Y_MIN -457
-//#define M_Z_MIN -424
-//#define M_X_MAX 197
-//#define M_Y_MAX 535
-//#define M_Z_MAX 397
+float P_TERM;
 
-
-
-
-//#define STATUS_LED 13 
-
-float G_Dt=1.0/LOOP_FREQ;  // Integration time (DCM algorithm)  We will run the integration loop at 50Hz if possible
 
 long timer=0;   //general purpuse timer
 long timer_old;
@@ -124,40 +105,22 @@ float pitch;
 float yaw;
 //int yaw=0;
 
-float D_roll = 0;
-float D_pitch = 0;
-float D_yaw = 0;
+float D_roll = 0;   //Desired roll from Xmitter
+float D_pitch = 0;  //Desired pitch from Xmitter
+float D_yaw = 0;    //Desired yaw from Xmitter
 
-float E_roll;
-float E_pitch;
-float E_yaw;
-
-
+float E_roll;       //Error in roll for PID
+float E_pitch;      //Error in pitch for PID
+float E_yaw;        //Error in yaw for PID
 
 unsigned int counter=0;
 unsigned int rangeCounter=0;
 long int Range=0;
 
-//byte gyro_sat=0;
-
-
 //Define the aggressive and conservative Tuning Parameters
 float aggKp=4, aggKi=0.2, aggKd=1;
-//float consKp=.5, consKi=0.025, consKd=0.125;
-
 float consKp=1.5, consKi=0.00, consKd=0.3500;
 float initKp=.9, initKi=1.5, initKd=.135;
-
-//float initKp=.5, initKi=0.025, initKd=0.125;
-
-#if FILTER_ROLL_PITCH
-#define FILTER_SIZE_2 5
-float filter_Roll[FILTER_SIZE_2];
-float filter_Pitch[FILTER_SIZE_2];
-float sum_Roll,sum_Pitch;
-int FC1 = 0;
-#endif
-
 
 //Specify the links and initial tuning parameters
 PID RollPID(&roll, &E_roll, &D_roll, initKp, initKi, initKd, DIRECT);
@@ -172,27 +135,20 @@ void setup()
   Serial.println("Senior Design Quadcopter");
   delay(1500);
 
-  Gyro_Init();
- // Accel_Init();
-  //  Compass_Init();
-  compass.powerOn();
+  Gyro_Init();    //Initialize Gyro
+  compass.powerOn();  //Initialize Accel
   compass.set_bw(ADXL345_BW_12);
+  //Clear the internal offset registers of the accelerometer
   compass.setAxisOffset(0, 0, 0);
   delay(20);
   Serial.println("Offsets: Please wait 1 minute.");
   collect_offsets();
-  compass.setAxisOffset(-AN_OFFSET[3]/4, -AN_OFFSET[4]/4,-(AN_OFFSET[5]-256)/4);
+  //Write new values of offsets to Accel offset registers
+  compass.setAxisOffset(-AN_OFFSET[3]/4, -AN_OFFSET[4]/4,-(AN_OFFSET[5]-GRAVITY)/4);
+ 
   Serial.println("Offsets=");
   for(int i = 0; i<6;i++)
     Serial.println(AN_OFFSET[i],9);
-
-//AN_OFFSET[0]=12.512920380;
-//AN_OFFSET[1]=-10.521800041;
-//AN_OFFSET[2]=-4.051559925;
-//AN_OFFSET[3]=9.877433777;
-//AN_OFFSET[4]=-11.827033043;
-//AN_OFFSET[5]=-10.572357178;
-
 
   initPID();  //Initialize PID
   radio_init(); // Initialize radio (serial1)
@@ -200,7 +156,7 @@ void setup()
   ArmMotor();    //Initialize Motor signal (PWM 1-4)
   start_GDt_Clock();  //Initilize update clock (Timer 4 and 5 in 32 bit mode)
 
-  G_Dt = 1.0/800.0;
+//  G_Dt = 1.0/sampleFreq;
 }
 
 void loop() //Main Loop
@@ -212,12 +168,8 @@ void loop() //Main Loop
     //    rangeCounter++;
 
     // *** DCM algorithm
-    // Data adquisition
-    //     Read_Compass();    // Read I2C magnetometer
-    //     Compass_Heading(); // Calculate magnetic heading  
-
     Read_Accel();     // Read I2C accelerometer
-    Update_Matrix();
+    Update_Matrix();  //Read Gryo and update Quaternions
 
     updatePID();
     updateMotor();   
@@ -257,7 +209,6 @@ void loop() //Main Loop
       Serial.print(throttle);
       Serial.print(",");
       Serial.print(E_pitch);
-      Serial.print(",");
       // Serial.print(" M ");  
       //  Serial.print("X: ");
       //  Serial.print(AN[3]);
@@ -273,7 +224,8 @@ void loop() //Main Loop
       //  Serial.print(AN[1]);
       //  Serial.print(" Z: ");
       //  Serial.println(AN[2]);
-      Serial.println(temp);
+      Serial.print(",");
+      Serial.println(P_TERM);
       
     }
 

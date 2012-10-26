@@ -1,6 +1,9 @@
 #define TIMEOUT  2000   //two second time out to start shuting down if valid signal is not recieved.
 
 int RX_state, RX_count;
+int flag, last;
+int dummy;
+
 union RX_data {
    char B[20];
    int I[5];
@@ -15,9 +18,7 @@ void radio_init(void){
    RX_state = 0;
    RX_count = 0;
  }
-int flag, last;
-int dummy;
-//float temp;
+
 inline void radio_check(void){
     if(Serial1.available()) {
             dummy = Serial1.read();
@@ -70,17 +71,17 @@ inline void radio_check(void){
                  case 5:
                     RX_data.B[RX_count++] =dummy;
                     if (RX_count > 1) {
-                        temp=RX_data.B[0]*1.0+RX_data.B[1]*0.1;
+                        P_TERM=RX_data.B[0]*1.0+RX_data.B[1]*0.1;
                         flag = false;  //Reset flag that shuts down motors
                         RX_count = 0;
                         RX_state = 0;
-                       //   RollPID.SetTunings(RX_data.F[0],0.0,0.0);
-                       PitchPID.SetTunings(temp,0.0,0.0);
-                       // Serial.print("packet Received");
-                       Serial.print("PID RX ");
-                       Serial.print(RX_data.B[0]);
-                       Serial.print(" ");
-                       Serial.println(RX_data.B[1]);
+                       //   RollPID..SetTunings(P_TERM,0.0,0.0);
+                       PitchPID.SetTunings(P_TERM,0.0,0.0);
+                       
+//                       Serial.print("PID RX ");
+//                       Serial.print(RX_data.B[0]);
+//                       Serial.print(" ");
+//                       Serial.println(RX_data.B[1]);
                                    } 
                    break; 
                  
@@ -94,7 +95,7 @@ inline void radio_check(void){
             D_pitch = 0.0;
             throttle -= 200;
             last = millis();
-          //  Serial.print("No Signal");
+           Serial.println("No Signal");
           }
           
           

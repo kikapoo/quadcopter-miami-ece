@@ -1,11 +1,11 @@
 
 void initPID(void){
 
-  RollPID.SetOutputLimits(-2.0,  2.0);
-  PitchPID.SetOutputLimits(-2.0,  2.0);
+  RollPID.SetOutputLimits(-PID_BOUND,  PID_BOUND);
+  PitchPID.SetOutputLimits(-PID_BOUND,  PID_BOUND);
 
-  RollPID.SetSampleTime(20);  //20 ms for 50Hz
-  PitchPID.SetSampleTime(20);//20 ms for 50Hz
+  RollPID.SetSampleTime(LOOP_TIME);  //20 ms for 50Hz
+  PitchPID.SetSampleTime(LOOP_TIME);//20 ms for 50Hz
 
   RollPID.SetMode(MANUAL);
   PitchPID.SetMode(MANUAL);
