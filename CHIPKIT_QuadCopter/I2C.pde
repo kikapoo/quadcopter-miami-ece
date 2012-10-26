@@ -56,23 +56,25 @@ byte Gyro_Init()
 
   gyro.writeReg(L3G4200D_FIFO_CTRL_REG, 0x40); // FIFO in STREAM mode
 
-  
 
-  #if SAMPLE_FREQ == 100
+
+#if SAMPLE_FREQ == 100
   gyro.writeReg(L3G4200D_CTRL_REG1, 0x0F); // normal power mode, all axes enabled, 100 Hz
-  #endif
+#endif
 
-  #if SAMPLE_FREQ == 200
+#if SAMPLE_FREQ == 200
   gyro.writeReg(L3G4200D_CTRL_REG1, 0x4F); // normal power mode, all axes enabled, 200 Hz
-  #endif
+#endif
 
-  #if SAMPLE_FREQ == 400
+#if SAMPLE_FREQ == 400
   gyro.writeReg(L3G4200D_CTRL_REG1, 0x8F); // normal power mode, all axes enabled, 400 Hz 20 BW
-  #endif
+#endif
 
-  #if SAMPLE_FREQ == 800
+#if SAMPLE_FREQ == 800
   gyro.writeReg(L3G4200D_CTRL_REG1, 0xCF); // normal power mode, all axes enabled, 800 Hz 20 BW
-  #endif
+#endif
+  Serial.print(SAMPLE_FREQ);
+  Serial.println("Hz Gyro Sample");
 }
 
 
@@ -93,49 +95,55 @@ inline void Read_Accel()
   AN[3] = sum_X/FILTER_SIZE;
   AN[4] = sum_Y/FILTER_SIZE;
   AN[5] = sum_Z/FILTER_SIZE;
-  
-  #endif
+
+#endif
 
   accel_x = AN[3];
   accel_y = AN[4];
   accel_z = AN[5];
 
-  #if FILTER_ACCEL == 1
+#if FILTER_ACCEL == 1
   FC = (FC + 1)%FILTER_SIZE;  
-  #endif
+#endif
 }
 
 
 inline void Update_Matrix(void){
   byte FIFOcnt;
-    
+
   union RX_data {
     byte buf[6*32];
     int16_t Data[32][3];
   }
   FIFO_data;
 
-  //Check for noise on accel--------
-  #if ACCEL_NOISE_CHECK == 1
-  int mag = sqrt(accel_x*accel_x+accel_y*accel_y+accel_z*accel_z);
+  //Check for noise on accel
+#if ACCEL_NOISE_CHECK == 1
+  float mag = sqrt(accel_x*accel_x+accel_y*accel_y+accel_z*accel_z);
   //Gravity with in tolerance
-  if((mag>(1.5*GRAVITY)) || (mag<(.5*GRAVITY)))
+  if((mag>(1.5f*GRAVITY)) || (mag<(0.5f*GRAVITY))){
     accel_x=accel_y=accel_z=0.0;
-  //Gravity in Z direction has most weight
-  if((accel_z/mag)<.5)
-      accel_x=accel_y=accel_z=0.0;  
-  #endif
+    Serial.println("block accel MAGNITUDE");
+  }
+  else{
+    //Gravity in Z direction has most weight asin(.5) = 60 degrees across an axis
+    if((accel_z/GRAVITY)<0.5f){
+      accel_x=accel_y=accel_z=0.0; 
+      Serial.println("block accel LOW_Z_VALUE");
+    } 
+}
+#endif
   //--------------------------------
 
   FIFOcnt = gyro.readFIFOdepth();
   gyro.readFIFO(FIFO_data.buf, FIFOcnt);
-  
+
   for(int i=0; i<FIFOcnt;i++){
     gyro_x = (FIFO_data.Data[i][0]-AN_OFFSET[0])*Gyro_Gain_Rad;//0.07*0.01745329252; 
     gyro_y = (FIFO_data.Data[i][1]-AN_OFFSET[1])*Gyro_Gain_Rad;//0.07*0.01745329252; 
     gyro_z = (FIFO_data.Data[i][2]-AN_OFFSET[2])*Gyro_Gain_Rad;//0.07*0.01745329252; 
     if(i==0)
-      MadgwickAHRSupdateIMU(gyro_x,gyro_y,gyro_z,accel_x,accel_y,accel_z);
+     MadgwickAHRSupdateIMU(gyro_x,gyro_y,gyro_z,accel_x,accel_y,accel_z);
     else
       MadgwickAHRSupdateGyroIMU(gyro_x,gyro_y,gyro_z);
   }
@@ -155,17 +163,17 @@ void collect_offsets(void){
     int16_t Data[32][3];
   }
   FIFO_data;
-  
+
   float FIFOcnt;
   float total=0;
   float AccTotal=0;
-  
+
   while(total<50000){
     Read_Accel();
     FIFOcnt = gyro.readFIFOdepth();
     gyro.readFIFO(FIFO_data.buf, FIFOcnt);
     Serial.println((int)total);
-   
+
     for(int i=0; i<FIFOcnt;i++){
       AN_OFFSET[0] += FIFO_data.Data[i][0]; 
       AN_OFFSET[1] += FIFO_data.Data[i][1]; 
@@ -188,3 +196,4 @@ void collect_offsets(void){
   AN_OFFSET[5] /= AccTotal; 
 
 }
+

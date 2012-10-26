@@ -29,34 +29,14 @@
  */
 #include <plib.h>
 #include <L3G4200D.h>
-//#include <LSM303.h>
 #include <ADXL345.h>
 #include <Wire.h>
 #include <PID_v1.h>
 
 L3G4200D gyro;
-//LSM303 compass;
 ADXL345 compass;
-// Uncomment the below line to use this axis definition: 
-// X axis pointing forward
-// Y axis pointing to the right 
-// and Z axis pointing down.
-// Positive pitch : nose up
-// Positive roll : right wing down
-// Positive yaw : clockwise
-//int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
-// Uncomment the below line to use this axis definition: 
-// X axis pointing forward
-// Y axis pointing to the left 
-// and Z axis pointing up.
-// Positive pitch : nose down
-// Positive roll : right wing down
-// Positive yaw : counterclockwise
-//int SENSOR_SIGN[9] = {
-//  1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 
-// tested with Arduino Uno with ATmega328 and Arduino Duemilanove with ATMega168
-
+#define PRINT_OUTPUTS 0
 
 #define ACCEL_NOISE_CHECK 1 //Checks the magnitude of accel and ensures it is within tolerance
 
@@ -77,7 +57,7 @@ ADXL345 compass;
 
 // L3G4200D gyro: 2000 dps full scale
 // 70 mdps/digit; 1 dps = 0.07
-#define Gyro_Gain 0.07 //X axis Gyro gain
+#define Gyro_Gain 0.07 //Gyro gain
 #define Gyro_Gain_Rad  Gyro_Gain*0.01745329252
 
 float gyro_x;
@@ -87,23 +67,19 @@ float accel_x;
 float accel_y;
 float accel_z;
 
-float P_TERM;
-
-
-long timer=0;   //general purpuse timer
-long timer_old;
+float P_TERM;  // Used in varying Kp for Zeigler-Nichols method for tunning PID
 
 int AN[6]; //array that stores the gyro and accelerometer data
 float AN_OFFSET[6]={0,0,0,0,0,0}; //Array that stores the Offset of the sensors
 
-int throttle = 0;
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
-// Euler angles
+// Euler angles of Attitude calculation
 float roll;
 float pitch;
 float yaw;
-//int yaw=0;
+
+int throttle = 0;
 
 float D_roll = 0;   //Desired roll from Xmitter
 float D_pitch = 0;  //Desired pitch from Xmitter
@@ -114,8 +90,8 @@ float E_pitch;      //Error in pitch for PID
 float E_yaw;        //Error in yaw for PID
 
 unsigned int counter=0;
-unsigned int rangeCounter=0;
-long int Range=0;
+unsigned int rangeCounter=0;  //Counter for deciding when the next range should be calculated
+long int Range=0;            //Range value from Ultrasonic sensor
 
 //Define the aggressive and conservative Tuning Parameters
 float aggKp=4, aggKi=0.2, aggKd=1;
@@ -187,7 +163,7 @@ void loop() //Main Loop
       //Serial.print("Range = ");
       //Serial.println(Range);
     }
-
+    #if PRINT_OUTPUTS == 1
     if(counter == 0){
       // Serial.println(G_Dt,9);
       //      Serial.print(roll);
@@ -228,7 +204,7 @@ void loop() //Main Loop
       Serial.println(P_TERM);
       
     }
-
+    #endif
 
   }
 
