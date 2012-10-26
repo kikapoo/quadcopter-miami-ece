@@ -95,7 +95,7 @@ inline void radio_check(void){
             D_pitch = 0.0;
             throttle -= 200;
             last = millis();
-           Serial.println("No Signal");
+          // Serial.println("No Signal");
           }
           
           
