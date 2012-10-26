@@ -9,11 +9,12 @@ void initPID(void){
 
   RollPID.SetMode(MANUAL);
   PitchPID.SetMode(MANUAL);
-  
+
 }
 
 inline void updatePID(void){
-       
-     RollPID.Compute();
-     PitchPID.Compute(); 
- }
+
+  RollPID.Compute();
+  PitchPID.Compute(); 
+}
+
