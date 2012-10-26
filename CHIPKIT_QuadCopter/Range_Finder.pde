@@ -30,7 +30,7 @@ void range_start(void){
 
 int range_available(void){
   if((IFS0 & 0x00000020)&&(!(IEC0&0x00001000)))  //if Capture event and timer interupt off
-//  if((IC1CON&0x0008)&&(!(IEC0&0x00001000)))  //if Capture event and timer interupt off
+    //  if((IC1CON&0x0008)&&(!(IEC0&0x00001000)))  //if Capture event and timer interupt off
     return 1;
   else
     return 0;
@@ -39,14 +39,14 @@ int range_available(void){
 long int range_get(void){
   int wasted;
   int range;
-  
+
   range = IC1BUF;
   range += T3_OVFL_CNT*TWENTY_MS-RANGE_PULSE;
   range = range/11942-2;  //Convert time to inches of distance
-  
+
   while(IC1CON&0x0008)  //clear buffer
     wasted = IC1BUF;
-  
+
   IC1CONCLR = 0x000080;  //turn off T1/T2 interupt
   IFS0CLR = 0x00000020;
   return range;
@@ -54,26 +54,27 @@ long int range_get(void){
 
 
 extern "C"{ 
-void __ISR(_TIMER_3_VECTOR,ipl3) OVFLcnt(void)
-{
-        
+  void __ISR(_TIMER_3_VECTOR,ipl3) OVFLcnt(void)
+  {
+
     IFS0CLR = 0x00001000;// Clear the T3 interrupt flag
- 
+
     if(IFS0&0x00000020) //Captured
-       IEC0CLR = 0x00001000;  //Capture occured turn off T3 interrupt
+      IEC0CLR = 0x00001000;  //Capture occured turn off T3 interrupt
     else
-       ++T3_OVFL_CNT;  //No capture but there was a timer overflow
-    
+      ++T3_OVFL_CNT;  //No capture but there was a timer overflow
+
     if(OC5R==RANGE_PULSE){
       OC5RS = 0x0; //Turn off output pulse
       T3_OVFL_CNT=0;
     }
 
- }
-// void __ISR(_INPUT_CAPTURE_1_VECTOR,ipl3) IC1captured(void){
-//   IFS0CLR = 0x00000020;// Clear the IC1 interrupt flag
-//   Captured = 1;
-//   
-// }
- 
+  }
+  // void __ISR(_INPUT_CAPTURE_1_VECTOR,ipl3) IC1captured(void){
+  //   IFS0CLR = 0x00000020;// Clear the IC1 interrupt flag
+  //   Captured = 1;
+  //   
+  // }
+
 }
+

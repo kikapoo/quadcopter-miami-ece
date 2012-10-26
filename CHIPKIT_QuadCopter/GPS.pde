@@ -1,10 +1,10 @@
 /*
   Example of GPS MTK library.
-  Code by Jordi Mu�oz and Jose Julio. DIYDrones.com
-
-  Works with Ardupilot Mega Hardware (GPS on Serial Port1)
-  and with standard ATMega168 and ATMega328 on Serial Port 0
-*/
+ Code by Jordi Mu�oz and Jose Julio. DIYDrones.com
+ 
+ Works with Ardupilot Mega Hardware (GPS on Serial Port1)
+ and with standard ATMega168 and ATMega328 on Serial Port 0
+ */
 
 #include <GPS_MTK.h> // UBLOX GPS Library
 
@@ -20,10 +20,10 @@ void GPS_BEGIN()
 void GPS_READ()
 {
   GPS.Read();
-//  if(Serial1.available())
-//    Serial.print((char)Serial1.read());
+  //  if(Serial1.available())
+  //    Serial.print((char)Serial1.read());
   if (GPS.NewData)  // New GPS data?
-    {
+  {
     Serial.print("GPS:");
     Serial.print(" Lat:");
     Serial.print(GPS.Lattitude);
@@ -45,6 +45,7 @@ void GPS_READ()
     Serial.print((float)GPS.Time/1000);
     Serial.println();
     GPS.NewData = 0; // We have readed the data
-    }
+  }
   //delay(20);
 }
+

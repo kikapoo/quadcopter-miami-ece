@@ -70,7 +70,8 @@ float accel_z;
 float P_TERM;  // Used in varying Kp for Zeigler-Nichols method for tunning PID
 
 int AN[6]; //array that stores the gyro and accelerometer data
-float AN_OFFSET[6]={0,0,0,0,0,0}; //Array that stores the Offset of the sensors
+float AN_OFFSET[6]={
+  0,0,0,0,0,0}; //Array that stores the Offset of the sensors
 
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
@@ -121,7 +122,7 @@ void setup()
   collect_offsets();
   //Write new values of offsets to Accel offset registers
   compass.setAxisOffset(-AN_OFFSET[3]/4, -AN_OFFSET[4]/4,-(AN_OFFSET[5]-GRAVITY)/4);
- 
+
   Serial.println("Offsets=");
   for(int i = 0; i<6;i++)
     Serial.println(AN_OFFSET[i],9);
@@ -132,7 +133,7 @@ void setup()
   ArmMotor();    //Initialize Motor signal (PWM 1-4)
   start_GDt_Clock();  //Initilize update clock (Timer 4 and 5 in 32 bit mode)
 
-//  G_Dt = 1.0/sampleFreq;
+  //  G_Dt = 1.0/sampleFreq;
 }
 
 void loop() //Main Loop
@@ -163,7 +164,7 @@ void loop() //Main Loop
       //Serial.print("Range = ");
       //Serial.println(Range);
     }
-    #if PRINT_OUTPUTS == 1
+#if PRINT_OUTPUTS == 1
     if(counter == 0){
       // Serial.println(G_Dt,9);
       //      Serial.print(roll);
@@ -202,11 +203,12 @@ void loop() //Main Loop
       //  Serial.println(AN[2]);
       Serial.print(",");
       Serial.println(P_TERM);
-      
+
     }
-    #endif
+#endif
 
   }
 
 }
+
 

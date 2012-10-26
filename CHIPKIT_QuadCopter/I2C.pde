@@ -121,17 +121,17 @@ inline void Update_Matrix(void){
 #if ACCEL_NOISE_CHECK == 1
   float mag = sqrt(accel_x*accel_x+accel_y*accel_y+accel_z*accel_z);
   //Gravity with in tolerance
-  if((mag>(1.5f*GRAVITY)) || (mag<(0.5f*GRAVITY))){
+  if(abs(mag-GRAVITY)>(0.5f*GRAVITY)){
     accel_x=accel_y=accel_z=0.0;
     Serial.println("block accel MAGNITUDE");
   }
   else{
     //Gravity in Z direction has most weight asin(.5) = 60 degrees across an axis
-    if((accel_z/GRAVITY)<0.5f){
+    if((accel_z/mag)<0.5f){
       accel_x=accel_y=accel_z=0.0; 
       Serial.println("block accel LOW_Z_VALUE");
     } 
-}
+  }
 #endif
   //--------------------------------
 
@@ -143,7 +143,7 @@ inline void Update_Matrix(void){
     gyro_y = (FIFO_data.Data[i][1]-AN_OFFSET[1])*Gyro_Gain_Rad;//0.07*0.01745329252; 
     gyro_z = (FIFO_data.Data[i][2]-AN_OFFSET[2])*Gyro_Gain_Rad;//0.07*0.01745329252; 
     if(i==0)
-     MadgwickAHRSupdateIMU(gyro_x,gyro_y,gyro_z,accel_x,accel_y,accel_z);
+      MadgwickAHRSupdateIMU(gyro_x,gyro_y,gyro_z,accel_x,accel_y,accel_z);
     else
       MadgwickAHRSupdateGyroIMU(gyro_x,gyro_y,gyro_z);
   }
@@ -196,4 +196,5 @@ void collect_offsets(void){
   AN_OFFSET[5] /= AccTotal; 
 
 }
+
 
