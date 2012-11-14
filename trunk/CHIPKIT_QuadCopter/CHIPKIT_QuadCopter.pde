@@ -29,21 +29,24 @@
  */
 #include <plib.h>
 #include <L3G4200D.h>
-#include <ADXL345.h>
+//#include <ADXL345.h>
+#include <LSM303.h>
 #include <Wire.h>
 #include <PID_v1.h>
 
 L3G4200D gyro;
-ADXL345 compass;
+//ADXL345 compass;
+LSM303 compass;
 
-#define PRINT_OUTPUTS 0
+#define PRINT_OUTPUTS 1
+#define TUNPID  0
 
 #define ACCEL_NOISE_CHECK 1 //Checks the magnitude of accel and ensures it is within tolerance
 
-#define SAMPLE_FREQ	800 // sample frequency of Gyro in Hz (use 100, 200, 400, 800)
-#define betaDef		0.8f    // 2 * proportional gain wieght of Accel for IMU update
+#define SAMPLE_FREQ	200 // sample frequency of Gyro in Hz (use 100, 200, 400, 800)
+#define betaDef		0.07f    // 2 * proportional gain wieght of Accel for IMU update
 #define G_Dt 1.0f/SAMPLE_FREQ   // Gyro Sample time 
-
+float halfT = G_Dt/2;
 
 #define LOOP_FREQ 50  //choose 50,100, or 200 Hz
 #define LOOP_TIME 1000/LOOP_FREQ  //Loop update time in ms
@@ -59,6 +62,8 @@ ADXL345 compass;
 // 70 mdps/digit; 1 dps = 0.07
 #define Gyro_Gain 0.07 //Gyro gain
 #define Gyro_Gain_Rad  Gyro_Gain*0.01745329252
+int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+//int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1};
 
 float gyro_x;
 float gyro_y;
@@ -70,7 +75,7 @@ float accel_z;
 float P_TERM;  // Used in varying Kp for Zeigler-Nichols method for tunning PID
 
 int AN[6]; //array that stores the gyro and accelerometer data
-float AN_OFFSET[6]={
+float AN_OFFSET[9]={
   0,0,0,0,0,0}; //Array that stores the Offset of the sensors
 
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
@@ -96,12 +101,12 @@ long int Range=0;            //Range value from Ultrasonic sensor
 
 //Define the aggressive and conservative Tuning Parameters
 float aggKp=4, aggKi=0.2, aggKd=1;
-float consKp=1.5, consKi=0.00, consKd=0.3500;
-float initKp=.9, initKi=1.5, initKd=.135;
+float consKp=1.5, consKi=0.00, consKd=0.3000;
+float initKp=0.9, initKi=0.0, initKd=.135;//Ki=1.5,
 
 //Specify the links and initial tuning parameters
-PID RollPID(&roll, &E_roll, &D_roll, initKp, initKi, initKd, DIRECT);
-PID PitchPID(&pitch, &E_pitch, &D_pitch, initKp, initKi, initKd, DIRECT);
+PID RollPID(&roll, &E_roll, &D_roll, consKp, consKi, consKd, DIRECT);
+PID PitchPID(&pitch, &E_pitch, &D_pitch, consKp, consKi, consKd, DIRECT);
 
 
 void setup()
@@ -113,15 +118,16 @@ void setup()
   delay(1500);
 
   Gyro_Init();    //Initialize Gyro
-  compass.powerOn();  //Initialize Accel
-  compass.set_bw(ADXL345_BW_12);
+  Accel_Init();
+ // compass.powerOn();  //Initialize Accel
+//  compass.set_bw(ADXL345_BW_12);
   //Clear the internal offset registers of the accelerometer
-  compass.setAxisOffset(0, 0, 0);
+//  compass.setAxisOffset(0, 0, 0);
   delay(20);
   Serial.println("Offsets: Please wait 1 minute.");
   collect_offsets();
   //Write new values of offsets to Accel offset registers
-  compass.setAxisOffset(-AN_OFFSET[3]/4, -AN_OFFSET[4]/4,-(AN_OFFSET[5]-GRAVITY)/4);
+ // compass.setAxisOffset(-AN_OFFSET[3]/4, -AN_OFFSET[4]/4,-(AN_OFFSET[5]-GRAVITY)/4);
 
   Serial.println("Offsets=");
   for(int i = 0; i<6;i++)
@@ -186,13 +192,13 @@ void loop() //Main Loop
       Serial.print(throttle);
       Serial.print(",");
       Serial.print(E_pitch);
-      // Serial.print(" M ");  
-      //  Serial.print("X: ");
-      //  Serial.print(AN[3]);
-      //  Serial.print(" Y: ");
-      //  Serial.print(AN[4]);
-      //  Serial.print(" Z: ");
-      //  Serial.print(AN[5]);
+       Serial.print(" M ");  
+        Serial.print("X: ");
+        Serial.print(AN[3]);
+        Serial.print(" Y: ");
+        Serial.print(AN[4]);
+        Serial.print(" Z: ");
+        Serial.print(AN[5]);
       //  
       //  Serial.print(" G ");
       //  Serial.print("X: ");
