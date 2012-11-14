@@ -28,9 +28,11 @@ inline void radio_check(void){
         RX_state = 1;
       if(dummy == 0xC5)//Activat PID
         RX_state = 3;
+      #ifdef TUNPID == 1
       if(dummy == 0xD5)
         RX_state = 4;
       break;
+      #endif
     case 1: //recieving x y data from controller
       if (dummy == 0x5C) //button pressed recieved
         RX_state = 2;
@@ -61,6 +63,7 @@ inline void radio_check(void){
       }
       RX_state = 0;
       break;
+      #ifdef TUNPID == 1
     case 4:
       if(dummy == 0x5D){//PID Tuning loop
         RX_state = 5;
@@ -85,6 +88,7 @@ inline void radio_check(void){
         //                       Serial.println(RX_data.B[1]);
       } 
       break; 
+      #endif
     }
   }
   else{
@@ -94,6 +98,8 @@ inline void radio_check(void){
         D_pitch = 0.0;
         throttle -= 200;
         last = millis();
+        if(throttle<0)
+            throttle = 0;
         // Serial.println("No Signal");
       }
     }
