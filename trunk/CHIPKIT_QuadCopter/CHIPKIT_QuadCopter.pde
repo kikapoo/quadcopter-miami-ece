@@ -102,7 +102,7 @@ long int Range=0;            //Range value from Ultrasonic sensor
 //Define the aggressive and conservative Tuning Parameters
 float aggKp=4, aggKi=0.2, aggKd=1;
 float consKp=1.5, consKi=0.00, consKd=0.3000;
-float initKp=0.9, initKi=0.0, initKd=.135;//Ki=1.5,
+float initKp=0.9, initKi=0.00, initKd=.135; //Ki=1.5, 
 
 //Specify the links and initial tuning parameters
 PID RollPID(&roll, &E_roll, &D_roll, consKp, consKi, consKd, DIRECT);
@@ -138,6 +138,7 @@ void setup()
   //  range_init();  //Initialize Range finder (PWM 5)
   ArmMotor();    //Initialize Motor signal (PWM 1-4)
   start_GDt_Clock();  //Initilize update clock (Timer 4 and 5 in 32 bit mode)
+  initializeKinematics();
 
   //  G_Dt = 1.0/sampleFreq;
 }
@@ -192,13 +193,13 @@ void loop() //Main Loop
       Serial.print(throttle);
       Serial.print(",");
       Serial.print(E_pitch);
-       Serial.print(" M ");  
-        Serial.print("X: ");
-        Serial.print(AN[3]);
-        Serial.print(" Y: ");
-        Serial.print(AN[4]);
-        Serial.print(" Z: ");
-        Serial.print(AN[5]);
+//       Serial.print(" M ");  
+//        Serial.print("X: ");
+//        Serial.print(AN[3]);
+//        Serial.print(" Y: ");
+//        Serial.print(AN[4]);
+//        Serial.print(" Z: ");
+//        Serial.print(AN[5]);
       //  
       //  Serial.print(" G ");
       //  Serial.print("X: ");

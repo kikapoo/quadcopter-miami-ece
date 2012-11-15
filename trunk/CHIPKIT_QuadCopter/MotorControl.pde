@@ -71,11 +71,11 @@ inline void updateMotor(void){
        LEFT_MOTOR = (MIN_MOTOR+yaw)+throttle-(4000.0* E_roll);   
       RIGHT_MOTOR = (MIN_MOTOR+yaw)+throttle+(4000.0*E_roll);
 
-     FRONT_MOTOR = (MIN_MOTOR)+throttle;  
-     REAR_MOTOR = (MIN_MOTOR)+throttle;
+     //FRONT_MOTOR = (MIN_MOTOR)+throttle;  
+     //REAR_MOTOR = (MIN_MOTOR)+throttle;
 
-  //FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle-(4000.0*E_pitch);
-  //REAR_MOTOR = (MIN_MOTOR-yaw)+throttle+(4000.0*E_pitch);
+  FRONT_MOTOR = (MIN_MOTOR-yaw)+throttle-(4000.0*E_pitch);
+  REAR_MOTOR = (MIN_MOTOR-yaw)+throttle+(4000.0*E_pitch);
 
 }
 

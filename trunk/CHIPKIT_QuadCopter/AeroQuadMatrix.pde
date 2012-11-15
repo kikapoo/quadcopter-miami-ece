@@ -50,11 +50,11 @@ void argUpdate(float gx, float gy, float gz, float ax, float ay, float az) {
   float ex, ey, ez;
     
   // normalise the measurements
-  norm = sqrt(ax*ax + ay*ay + az*az);       
-  //norm = invSqrt(ax*ax + ay*ay + az*az);       
-  ax = ax / norm;
-  ay = ay / norm;
-  az = az / norm;
+  //norm = sqrt(ax*ax + ay*ay + az*az);       
+  norm = invSqrt(ax*ax + ay*ay + az*az);       
+  ax = ax * norm;
+  ay = ay * norm;
+  az = az * norm;
      	
   // estimated direction of gravity and flux (v and w)
   vx = 2*(q1*q3 - q0*q2);
@@ -101,12 +101,12 @@ void argUpdate(float gx, float gy, float gz, float ax, float ay, float az) {
   q3 += q3i;
     
   // normalise quaternion
-  //norm = invSqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
-  norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
-  q0 = q0 / norm;
-  q1 = q1 / norm;
-  q2 = q2 / norm;
-  q3 = q3 / norm;
+  norm = invSqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+  //norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+  q0 = q0 * norm;
+  q1 = q1 * norm;
+  q2 = q2 * norm;
+  q3 = q3 * norm;
     
   // save the adjusted gyroscope measurements
 //  correctedRateVector[XAXIS] = gx;
@@ -133,8 +133,8 @@ void initializeKinematics(void)
   previousEy = 0;
   previousEz = 0;
 
-  Kp = 0.5; // 2.0; 0.2
-  Ki = 0.05; //0.0005;
+  Kp = 0.2; // 2.0; 0.2
+  Ki = 0.0005; //0.0005;
 }
   
 
