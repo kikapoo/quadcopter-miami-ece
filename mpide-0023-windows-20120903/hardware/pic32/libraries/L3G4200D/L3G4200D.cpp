@@ -7,8 +7,8 @@
 // The Arduino two-wire interface uses a 7-bit number for the address, 
 // and sets the last bit correctly based on reads and writes
 #ifndef GYR_ADDRESS
-//#define GYR_ADDRESS (0xD2 >> 1)
-#define GYR_ADDRESS (0xD0 >> 1)
+#define GYR_ADDRESS (0xD2 >> 1)
+//#define GYR_ADDRESS (0xD0 >> 1)
 #endif
 // Public Methods //////////////////////////////////////////////////////////////
 
