@@ -43,7 +43,7 @@ LSM303 compass;
 
 #define ACCEL_NOISE_CHECK 1 //Checks the magnitude of accel and ensures it is within tolerance
 
-#define SAMPLE_FREQ	200 // sample frequency of Gyro in Hz (use 100, 200, 400, 800)
+#define SAMPLE_FREQ	800 // sample frequency of Gyro in Hz (use 100, 200, 400, 800)
 #define betaDef		0.07f    // 2 * proportional gain wieght of Accel for IMU update
 #define G_Dt 1.0f/SAMPLE_FREQ   // Gyro Sample time 
 float halfT = G_Dt/2;
@@ -62,7 +62,7 @@ float halfT = G_Dt/2;
 // 70 mdps/digit; 1 dps = 0.07
 #define Gyro_Gain 0.07 //Gyro gain
 #define Gyro_Gain_Rad  Gyro_Gain*0.01745329252
-int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+int SENSOR_SIGN[9] = {1,-1,-1,1,1,1,1,1,1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
 //int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1};
 
 float gyro_x;
@@ -101,12 +101,14 @@ long int Range=0;            //Range value from Ultrasonic sensor
 
 //Define the aggressive and conservative Tuning Parameters
 float aggKp=4, aggKi=0.2, aggKd=1;
-float consKp=1.5, consKi=0.00, consKd=0.3000;
-float initKp=0.9, initKi=0.00, initKd=.135; //Ki=1.5, 
+float consKp=1.7, consKi=1.00, consKd=0.7000;
+//float initKp=0.9, initKi=1.50, initKd=.135; //Ki=1.5, 
+float initKp=2.1, initKi=1.0, initKd=.9; //Ki=1.5, 
 
 //Specify the links and initial tuning parameters
-PID RollPID(&roll, &E_roll, &D_roll, consKp, consKi, consKd, DIRECT);
+PID RollPID(&roll, &E_roll, &D_roll, initKp, initKi, initKd, DIRECT);
 PID PitchPID(&pitch, &E_pitch, &D_pitch, consKp, consKi, consKd, DIRECT);
+PID YawPID(&yaw, &E_yaw, &D_yaw, consKp, consKi, consKd, DIRECT);
 
 
 void setup()
