@@ -52,7 +52,7 @@ inline void radio_check(void){
         if(abs(RX_data.I[2])<100000)
           throttle = RX_data.I[2];
         if(abs(RX_data.I[3])<4000);
-        yaw = RX_data.I[3];
+        D_yaw = RX_data.I[3];
         // Serial.print("packet Received");
       } 
       break; 

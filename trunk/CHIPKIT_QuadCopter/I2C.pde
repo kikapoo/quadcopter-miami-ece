@@ -145,7 +145,7 @@ inline void Update_Matrix(void){
     gyro_z = (FIFO_data.Data[i][2]-AN_OFFSET[2])*0.00122173047639603070384658353794;//0.07*0.01745329252; //gyro.g.z;
    // if(i==0)
    // MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,accel_x,accel_y,accel_z);
-      argUpdate(gyro_x,gyro_y,gyro_z,-accel_x,-accel_y,-accel_z);
+      argUpdate(gyro_x,-gyro_y,-gyro_z,accel_x,-accel_y,-accel_z);
 
    // else
    //   MadgwickAHRSupdateIMU(gyro_x,-gyro_y,-gyro_z,0.0,0.0,0.0);
@@ -192,7 +192,7 @@ void collect_offsets(void){
   float FIFOcnt;
 
   
-  while(total<50000){
+  while(total<30000){
     Read_Accel();
     FIFOcnt = gyro.readFIFOdepth();
     gyro.readFIFO(FIFO_data.buf, FIFOcnt);
@@ -221,7 +221,19 @@ void collect_offsets(void){
   AN_OFFSET[5]-=GRAVITY*SENSOR_SIGN[5];
   total = 0;
 }
+//---------------------------------------------------------------------------------------------------
+// Fast inverse square-root
+// See: http://en.wikipedia.org/wiki/Fast_inverse_square_root
 
+float invSqrt(float x) {
+  float halfx = 0.5f * x;
+  float y = x;
+  long i = *(long*)&y;
+  i = 0x5f3759df - (i>>1);
+  y = *(float*)&i;
+  y = y * (1.5f - (halfx * y * y));
+  return y;
+}
 
 //void Read_Compass()
 //{
