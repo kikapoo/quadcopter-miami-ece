@@ -20,8 +20,11 @@ This page is for the Quadcopter videos through various phases of testing and pre
 == PID Test ==
 
 -----
+== Test Flight #1 ==
+
 
 <wiki:video url="http://www.youtube.com/watch?v=mohGb9-Vvdg&feature=plcp"/>
+-----
 
-
+<wiki:video url="http://youtu.be/PL8v-f5wcUo"/>
 <g:plusone size="medium"></g:plusone>
