@@ -24,5 +24,7 @@ This page is for the Quadcopter videos through various phases of testing and pre
 == Test Flight #1 ==
 <wiki:video url="http://www.youtube.com/watch?v=PL8v-f5wcUo&feature=youtu.be"/>
 -----
-
+== Test Flight #2 ==
+<wiki:video url="http://www.youtube.com/watch?v=8H_-DAt8YZs&feature=youtu.be"/>
+-----
 <g:plusone size="medium"></g:plusone>
