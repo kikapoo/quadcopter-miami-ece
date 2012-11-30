@@ -8,7 +8,7 @@ This page is for the Quadcopter videos through various phases of testing and pre
 -----
 
 == Orientation Test ==
-
+<wiki:video url="http://www.youtube.com/watch?v=JHfzs6pUwKY"/>
 -----
 
 == Axis Testing ==
